@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\JobSearch.Application.Abstractions\JobSearch.Application.Abstractions.csproj" />
+    <ProjectReference Include="..\JobSearch.Business\JobSearch.Business.csproj" />
+    <ProjectReference Include="..\JobSearch.Persistence\JobSearch.Persistence.csproj" />
+  </ItemGroup>
+
+</Project>

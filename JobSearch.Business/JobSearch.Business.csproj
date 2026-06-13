@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\JobSearch.Application.Abstractions\JobSearch.Application.Abstractions.csproj" />
+    <ProjectReference Include="..\JobSearch.Persistence.Abstractions\JobSearch.Persistence.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

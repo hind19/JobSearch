@@ -15,9 +15,22 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\pdf_icon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\JobSearch.AI\JobSearch.AI.csproj" />
     <ProjectReference Include="..\JobSearch.Application.Abstractions\JobSearch.Application.Abstractions.csproj" />
     <ProjectReference Include="..\JobSearch.Business\JobSearch.Business.csproj" />
+    <ProjectReference Include="..\JobSearch.Email\JobSearch.Email.csproj" />
     <ProjectReference Include="..\JobSearch.Persistence\JobSearch.Persistence.csproj" />
+    <ProjectReference Include="..\JobSearch.Scraping\JobSearch.Scraping.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.17" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.17" />
   </ItemGroup>
 
 </Project>

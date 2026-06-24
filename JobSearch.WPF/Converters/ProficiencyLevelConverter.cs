@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Windows.Data;
+using JobSearch.Application.Abstractions.Enums;
 using JobSearch.WPF.Models;
 
 namespace JobSearch.WPF.Converters;
@@ -11,11 +12,11 @@ public class ProficiencyLevelConverter : IValueConverter
         value is ProficiencyLevel level ? level switch
         {
             ProficiencyLevel.NotSpecified => "—",
-            ProficiencyLevel.Beginner     => "Beginner",
+            ProficiencyLevel.Beginner => "Beginner",
             ProficiencyLevel.Intermediate => "Intermediate",
-            ProficiencyLevel.Advanced     => "Advanced",
-            ProficiencyLevel.Expert       => "Expert",
-            _                             => value.ToString() ?? string.Empty
+            ProficiencyLevel.Advanced => "Advanced",
+            ProficiencyLevel.Expert => "Expert",
+            _ => value.ToString() ?? string.Empty
         } : string.Empty;
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>

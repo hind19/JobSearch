@@ -1,6 +1,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using JobSearch.Application.Abstractions.Enums;
 using JobSearch.Application.Abstractions.Interfaces;
+using JobSearch.WPF.Dialogs;
 using JobSearch.WPF.Models;
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
@@ -11,11 +13,11 @@ namespace JobSearch.WPF.ViewModels;
 
 public partial class UserProfileViewModel : ObservableObject
 {
-    private string _cvFilePath;
+    private string _cvFilePath = string.Empty;
 
-    private byte[] _cvFileData;
+    private readonly IUserProfileService _userProfileService;
 
-    private IUserProfileService userProfileService;
+    private readonly IDialogService _dialogService;
 
     [ObservableProperty]
     private string _cvFileName = string.Empty;
@@ -26,13 +28,17 @@ public partial class UserProfileViewModel : ObservableObject
     [ObservableProperty]
     private ImageSource? _cvIcon;
 
-    public ObservableCollection<SkillItem> Skills { get; } = new();
-    public ObservableCollection<ClarifyingQuestionItem> ClarifyingQuestions { get; } = new();
+    [ObservableProperty]
+    private ObservableCollection<SkillItem> _skills = new();
+    [ObservableProperty]
+    private ObservableCollection<ClarifyingQuestionItem> _clarifyingQuestions = new();
 
     public IEnumerable<ProficiencyLevel> ProficiencyLevels { get; } = Enum.GetValues<ProficiencyLevel>();
 
-    public UserProfileViewModel()
+    public UserProfileViewModel(IUserProfileService userProfileService, IDialogService dialogService)
     {
+        _userProfileService = userProfileService;
+        _dialogService = dialogService;
         LoadDesignTimeData();
     }
 
@@ -49,29 +55,17 @@ public partial class UserProfileViewModel : ObservableObject
         {
             try
             {
-                // TODO: save dialog.FileName or byte array to property as we send file to Claude only after user press the appropriate button
-                // leave only one
                 _cvFilePath = dialog.FileName;
-                _cvFileData = File.ReadAllBytes(dialog.FileName);
-                
-                
-                // update labels on UI
+
                 CvFileName = dialog.SafeFileName;
 
                 FileInfo fileInfo = new FileInfo(dialog.FileName);
                 int fileSizeInKB = (int)(fileInfo.Length / (1024));
                 CvFileInfo = $"Загружено {fileSizeInKB} kB ";
-
-                // 3. Read the file into a byte array
-                //byte[] fileBytes = File.ReadAllBytes(dialog.FileName);
-
-                // 4. Convert the byte array to a Base64 string
-                //string base64String = Convert.ToBase64String(fileBytes);
             }
             catch (Exception ex)
             {
-                // Handle exceptions (e.g., file in use, access denied)
-                Console.WriteLine($"Error converting file: {ex.Message}");
+                _dialogService.ShowError($"Error reading file: {ex.Message}");
             }
         }
     }
@@ -79,10 +73,39 @@ public partial class UserProfileViewModel : ObservableObject
     private bool CanAnalyzeCv() => !string.IsNullOrEmpty(CvFileName);
 
     [RelayCommand(CanExecute = nameof(CanAnalyzeCv))]
-    private void AnalyzeCv()
+    private async Task AnalyzeCv()
     {
-        // stub: call IJobMatchService or IUserProfileService to parse CV,
-        // then populate Skills and ClarifyingQuestions
+        var fileBytes = File.ReadAllBytes(_cvFilePath);
+
+        var result = await _userProfileService.AnalyzeCvAsync(fileBytes, CancellationToken.None);
+
+        if (!result.IsSuccess)
+        {
+            _dialogService.ShowError(result.ErrorMessage ?? "CV analysis failed.");
+            return;
+        }
+
+        Skills = new ObservableCollection<SkillItem>(result.Skills.Select(x => new SkillItem
+        {
+            IsFromCv = true,
+            ProficiencyLevel = x.ProficiencyLevel,
+             SkillName = x.SkillName,
+              YearsOfExperience = x.YearsOfExperience
+        }));
+
+        ClarifyingQuestions = new ObservableCollection<ClarifyingQuestionItem>(result.ClarifyingQuestions.Select(x => new ClarifyingQuestionItem
+        {
+            AnswerType = x.AnswerType,
+            SelectedCurrency = x.Currency,
+            QuestionText = x.QuestionText,
+            RangeFrom = x.RangeFrom,
+            RangeTo = x.RangeTo,
+            TextAnswer = x.TextAnswer,
+            SelectedAnswer = x.SelectedAnswer,
+            Options = x.Options,
+            //TODO: Fill Currencies if needed
+            // Currencies = x.
+        }));
     }
 
     [RelayCommand]
@@ -114,31 +137,31 @@ public partial class UserProfileViewModel : ObservableObject
 
     private void LoadDesignTimeData()
     {
-        
-        Skills.Add(new SkillItem { IsFromCv = true,  SkillName = "C#",          ProficiencyLevel = ProficiencyLevel.Advanced, YearsOfExperience = 8 });
-        Skills.Add(new SkillItem { IsFromCv = true,  SkillName = "ASP.NET Core", ProficiencyLevel = ProficiencyLevel.Advanced, YearsOfExperience = 6 });
-        Skills.Add(new SkillItem { IsFromCv = false, SkillName = string.Empty,   ProficiencyLevel = ProficiencyLevel.NotSpecified });
+
+        Skills.Add(new SkillItem { IsFromCv = true, SkillName = "C#", ProficiencyLevel = ProficiencyLevel.Advanced, YearsOfExperience = 8 });
+        Skills.Add(new SkillItem { IsFromCv = true, SkillName = "ASP.NET Core", ProficiencyLevel = ProficiencyLevel.Advanced, YearsOfExperience = 6 });
+        Skills.Add(new SkillItem { IsFromCv = false, SkillName = string.Empty, ProficiencyLevel = ProficiencyLevel.NotSpecified });
 
         ClarifyingQuestions.Add(new ClarifyingQuestionItem
         {
-            QuestionText   = "В вашем CV не указан уровень владения английским языком. Какой у вас уровень?",
-            AnswerType     = AnswerType.SingleSelect,
-            Options        = new() { "A1 — Beginner", "A2 — Elementary", "B1 — Intermediate", "B2 — Upper-Intermediate", "C1 — Advanced", "C2 — Proficient" },
+            QuestionText = "В вашем CV не указан уровень владения английским языком. Какой у вас уровень?",
+            AnswerType = AnswerType.SingleSelect,
+            Options = new() { "A1 — Beginner", "A2 — Elementary", "B1 — Intermediate", "B2 — Upper-Intermediate", "C1 — Advanced", "C2 — Proficient" },
             SelectedAnswer = "B2 — Upper-Intermediate"
         });
 
         ClarifyingQuestions.Add(new ClarifyingQuestionItem
         {
-            QuestionText   = "Какой формат работы вы предпочитаете — удалённо, гибрид или офис?",
-            AnswerType     = AnswerType.MultipleChoice,
-            Options        = new() { "Удалённо", "Гибрид", "Офис" },
+            QuestionText = "Какой формат работы вы предпочитаете — удалённо, гибрид или офис?",
+            AnswerType = AnswerType.MultipleChoice,
+            Options = new() { "Удалённо", "Гибрид", "Офис" },
             SelectedAnswer = "Удалённо"
         });
 
         ClarifyingQuestions.Add(new ClarifyingQuestionItem
         {
-            QuestionText     = "Уточните желаемую вилку зарплаты (валюта и диапазон).",
-            AnswerType       = AnswerType.NumericRange,
+            QuestionText = "Уточните желаемую вилку зарплаты (валюта и диапазон).",
+            AnswerType = AnswerType.NumericRange,
             SelectedCurrency = "USD"
         });
     }

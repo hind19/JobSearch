@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using JobSearch.Application.Abstractions.Enums;
 
 namespace JobSearch.WPF.Models;
 

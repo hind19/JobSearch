@@ -2,14 +2,10 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:JobSearch.WPF.ViewModels"
-             xmlns:models="clr-namespace:JobSearch.WPF.Models"
+             xmlns:enums="clr-namespace:JobSearch.Application.Abstractions.Enums;assembly=JobSearch.Application.Abstractions"
              xmlns:conv="clr-namespace:JobSearch.WPF.Converters"
              FontFamily="Segoe UI"
              FontSize="13">
-
-    <UserControl.DataContext>
-        <vm:UserProfileViewModel/>
-    </UserControl.DataContext>
 
     <UserControl.Resources>
 
@@ -127,7 +123,7 @@
                             </StackPanel>
                         </Grid>
 
-                        <DataGrid ItemsSource="{Binding Skills}"
+                        <DataGrid ItemsSource="{Binding Skills, Mode=TwoWay}"
                                   AutoGenerateColumns="False"
                                   HeadersVisibility="Column"
                                   GridLinesVisibility="Horizontal"
@@ -282,7 +278,7 @@
                     <StackPanel>
                         <TextBlock Text="Уточняющие вопросы" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,16"/>
 
-                        <ItemsControl ItemsSource="{Binding ClarifyingQuestions}">
+                        <ItemsControl ItemsSource="{Binding ClarifyingQuestions, Mode=TwoWay}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Grid Margin="0,0,0,14">
@@ -315,15 +311,15 @@
                                                             <Setter Property="ContentTemplate" Value="{StaticResource TextAnswerTemplate}"/>
                                                             <Style.Triggers>
                                                                 <DataTrigger Binding="{Binding AnswerType}"
-                                                                             Value="{x:Static models:AnswerType.SingleSelect}">
+                                                                             Value="{x:Static enums:AnswerType.SingleSelect}">
                                                                     <Setter Property="ContentTemplate" Value="{StaticResource SingleSelectTemplate}"/>
                                                                 </DataTrigger>
                                                                 <DataTrigger Binding="{Binding AnswerType}"
-                                                                             Value="{x:Static models:AnswerType.MultipleChoice}">
+                                                                             Value="{x:Static enums:AnswerType.MultipleChoice}">
                                                                     <Setter Property="ContentTemplate" Value="{StaticResource MultipleChoiceTemplate}"/>
                                                                 </DataTrigger>
                                                                 <DataTrigger Binding="{Binding AnswerType}"
-                                                                             Value="{x:Static models:AnswerType.NumericRange}">
+                                                                             Value="{x:Static enums:AnswerType.NumericRange}">
                                                                     <Setter Property="ContentTemplate" Value="{StaticResource NumericRangeTemplate}"/>
                                                                 </DataTrigger>
                                                             </Style.Triggers>

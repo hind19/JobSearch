@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace JobSearch.Persistence.Repositories
 {
-    public class UserRepository :IUserRepository
+    public class UserRepository : IUserRepository
     {
     }
 }

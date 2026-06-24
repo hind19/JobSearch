@@ -28,7 +28,8 @@ dotnet ef database update --project JobSearch.Persistence --startup-project JobS
 # Install Playwright browsers (required once after first build)
 pwsh JobSearch.Scraping/bin/Debug/net9.0/playwright.ps1 install
 
-# User Secrets (Worker project only — for API keys, SMTP credentials)
+# User Secrets (WPF and Worker both support secrets; Anthropic key is required at startup)
+dotnet user-secrets set "AnthropicSettings:ApiKey" "<value>" --project JobSearch.WPF
 dotnet user-secrets set "AnthropicSettings:ApiKey" "<value>" --project JobSearch.Worker
 dotnet user-secrets list --project JobSearch.Worker
 ```
@@ -37,7 +38,14 @@ There are no test projects yet.
 
 ## Architecture
 
-This is a .NET 9 job-search automation solution with two entry points: a WPF desktop UI (`JobSearch.WPF`) and a `JobSearch.Worker` background service that can be installed as a Windows Service. The codebase is currently in early scaffolding — all service interfaces, repository interfaces, Business service implementations, and the Worker pipeline are empty stubs. Domain entity models and `DbContext` have not yet been created.
+This is a .NET 9 job-search automation solution with two entry points: a WPF desktop UI (`JobSearch.WPF`) and a `JobSearch.Worker` background service that can be installed as a Windows Service.
+
+### Stubs (not yet implemented)
+
+- `JobSearch.Persistence`: `AppDbContext` has no `DbSet<T>` members yet; all four repository classes are empty
+- `JobSearch.Business`: `JobService`, `JobMatchService` — empty; `UserProfileService.AnalyzeCvAsync` — throws `NotImplementedException`
+- `JobSearch.Worker`: `Worker.ExecuteAsync` — placeholder loop (1 s delay)
+- `UserProfileViewModel`: `SaveProfile` and `Cancel` commands are stubs
 
 ### Project dependency graph
 
@@ -65,26 +73,44 @@ WPF ──────────── Business
 
 ### Layers
 
-- **`JobSearch.Application.Abstractions`** — Application-layer service interfaces (`IJobService`, `IUserProfileService`, `IJobMatchService`). No dependencies. This is the boundary the WPF layer should program against.
-- **`JobSearch.Persistence.Abstractions`** — Repository interfaces (`IJobRepository`, `IUserRepository`, `IUserJobMatchRepository`, `IJobSiteRepository`). No dependencies.
+- **`JobSearch.Application.Abstractions`** — Application-layer interfaces: `IJobService`, `IUserProfileService`, `IJobMatchService`, `IEmailSender`, `ICvParser`. Also contains shared DTOs (`CvAnalysisResult`, `CandidateInfo`, `SkillDto`, `WorkExperienceDto` — **declared in the global namespace**, no explicit `namespace` statement) and the `ProficiencyLevel` enum in `Enums/`. No project dependencies.
+- **`JobSearch.Persistence.Abstractions`** — Repository interfaces: `IJobRepository`, `IUserRepository`, `IUserJobMatchRepository`, `IJobSiteRepository`. No dependencies.
 - **`JobSearch.Business`** — Service implementations (`JobService`, `JobMatchService`, `UserProfileService`). References both abstractions layers; never references Persistence or AI directly.
-- **`JobSearch.Persistence`** — EF Core 9 + SQLite implementation of repository interfaces. Domain entity models and `DbContext` belong here. Only references `Persistence.Abstractions`.
-- **`JobSearch.Scraping`** — Browser automation with Playwright (v1.60) + HTML parsing with HtmlAgilityPack. Standalone — no project references.
-- **`JobSearch.AI`** — AI job-matching via `Anthropic.SDK` (v5.10). References Application.Abstractions, Persistence.Abstractions, and Scraping.
-- **`JobSearch.Email`** — Email notifications with MailKit/MimeKit (v4.17). Standalone — no project references.
-- **`JobSearch.Worker`** — .NET Generic Host (`BackgroundService`) that orchestrates the automated pipeline (scrape → AI match → email). Can be deployed as a Windows Service (`Microsoft.Extensions.Hosting.WindowsServices`). UserSecretsId: `dotnet-JobSearch.Worker-7f89b472-eadf-4203-a824-f76c74ab65c6`.
+- **`JobSearch.Persistence`** — EF Core 9 + SQLite. `AppDbContext` and all four repository implementations live here. Only references `Persistence.Abstractions`.
+- **`JobSearch.Scraping`** — Playwright (v1.60) browser automation + HtmlAgilityPack. Standalone — no project references.
+- **`JobSearch.AI`** — Anthropic SDK (v5.10). `CvParser` and `QuestionGenerator` are fully implemented. `AddAiServices` reads the API key from configuration and throws `InvalidOperationException` if absent — set it via user-secrets before running.
+- **`JobSearch.Email`** — MailKit/MimeKit (v4.17) email notifications. Standalone — no project references.
+- **`JobSearch.Worker`** — .NET Generic Host (`BackgroundService`) orchestrating scrape → AI match → email. Can run as a Windows Service (`Microsoft.Extensions.Hosting.WindowsServices`).
 
-### WPF MVVM conventions
+### CV Parsing pipeline (`JobSearch.AI`)
 
-- `JobSearch.WPF` targets `net9.0-windows` with `<UseWPF>true</UseWPF>`.
-- XAML styling: flat/minimal, light borders, no gradients or shadows, `CornerRadius="6"` to `"8"` on panels and controls. Primary accent color is `#1565C0`.
-- The MVVM layer uses the `CommunityToolkit.Mvvm` NuGet package (referenced by `JobSearch.WPF.csproj`). ViewModels and observable models derive from `CommunityToolkit.Mvvm.ComponentModel.ObservableObject` and are declared `partial`; backing fields use `[ObservableProperty]` and commands use `[RelayCommand]` (with `CanExecute = nameof(...)` for guarded commands) so the source generator produces the public properties/commands. Use `[NotifyPropertyChangedFor(nameof(Other))]` for derived properties and `partial void On<Prop>Changed(...)` hooks (e.g. to call `XCommand.NotifyCanExecuteChanged()`) instead of hand-written `SetProperty`/`OnPropertyChanged` calls. There is no `JobSearch.WPF/Infrastructure/` folder anymore — do not recreate a hand-rolled `ObservableObject`/`RelayCommand`.
-- ViewModels and models in the WPF project are presentation-layer types only — `JobSearch.WPF/Models/` holds `SkillItem`, `ClarifyingQuestionItem`, `ProficiencyLevel`, and `AnswerType`. Do not add references to `JobSearch.AI` or place domain logic here; persistence entity models belong in `JobSearch.Persistence`.
-- The `UserProfileViewModel` currently wires its `DataContext` directly in XAML (`<vm:UserProfileViewModel/>`) and calls `LoadDesignTimeData()` in its constructor. When DI is introduced, the DataContext binding must move to `App.xaml.cs` (or a ViewModelLocator) — ViewModel constructors cannot accept service dependencies while XAML instantiation is in use.
-- DI has not yet been wired in `App.xaml.cs` — it is currently an empty `Application` subclass.
+`CvParser` (implements `ICvParser`) is the only fully-implemented AI service. Its pipeline:
+
+1. PDF bytes → base64 → `DocumentContent` in an Anthropic `MessageParameters` (model: `claude-sonnet-4-20250514`, max 2000 tokens).
+2. System/user prompts live in `Prompts/CvParserPrompts.cs` as `internal const string` constants. The system prompt instructs Claude to return **only** a raw JSON object — no markdown or backticks.
+3. Response JSON is deserialized into internal sealed models in `JsonModels/` (`CvAnalysisRaw`, `SkillRaw`, `WorkExperienceRaw`).
+4. `Mapping/CvAnalysisMapper.cs` maps those raw models to the public DTOs in `Application.Abstractions`. It also builds `CvAnalysisResult.ClaudeReadyProfile` — a compact plaintext summary intended for feeding back into Claude for job-matching prompts.
+5. On any parse failure, `CvParser` returns a `CvAnalysisResult` with `IsSuccess = false` and an `ErrorMessage` rather than throwing (except `OperationCanceledException`, which propagates).
+
+### WPF — DI and MVVM
+
+DI is fully wired in `App.xaml.cs` via `Host.CreateDefaultBuilder()`. `App.OnStartup` builds the host, calls all `Add*Services()` extension methods, and resolves `MainWindow` from DI.
+
+**DataContext**: `MainWindow` receives `UserProfileViewModel` via constructor injection and sets `DataContext = viewModel`. `UserProfileView` inherits this DataContext from its parent. Do not add `<UserControl.DataContext>` back to `UserProfileView.xaml` — XAML instantiation cannot inject constructor dependencies.
+
+**Design-time data**: `UserProfileViewModel` calls `LoadDesignTimeData()` unconditionally from its constructor, populating `Skills` and `ClarifyingQuestions` with hardcoded items. Remove or gate this behind a design-mode check before implementing real data loading.
+
+#### MVVM conventions
+
+- ViewModels and observable models derive from `CommunityToolkit.Mvvm.ComponentModel.ObservableObject` and are declared `partial`.
+- Backing fields use `[ObservableProperty]`; commands use `[RelayCommand]` with `CanExecute = nameof(...)` for guarded commands.
+- Use `[NotifyPropertyChangedFor(nameof(Other))]` for derived properties and `partial void On<Prop>Changed(...)` hooks (e.g. to call `XCommand.NotifyCanExecuteChanged()`). Do not hand-roll `SetProperty`/`OnPropertyChanged` calls.
+- `JobSearch.WPF/Models/` holds presentation-only types: `SkillItem`, `ClarifyingQuestionItem`. `ProficiencyLevel` and `AnswerType` live in `Application.Abstractions/Enums/` — do not re-add them to WPF.
+- Dialog interactions go through `IDialogService` / `DialogService` in `JobSearch.WPF/Dialogs/` — do not call `MessageBox` directly from ViewModels.
+- XAML styling: flat/minimal, light borders, no gradients or shadows, `CornerRadius="6"` to `"8"` on panels and controls. Primary accent color `#1565C0`.
 
 ### Configuration
 
-- `appsettings.json` in each entry-point project (`Worker`, `WPF`) holds section stubs: `ConnectionStrings`, `AnthropicSettings`, `WorkerSettings`, `EmailSettings`.
-- The Worker project uses .NET User Secrets for local development of sensitive values (API keys, SMTP credentials). The WPF project does not have User Secrets configured — add secrets to the Worker's secret store and expose them via shared configuration if needed.
-- `WorkerSettings` is intended for scheduling interval configuration (e.g., how often the scrape→match→email pipeline runs).
+- `appsettings.json` in each entry-point project holds stubs for: `ConnectionStrings`, `AnthropicSettings`, `WorkerSettings`, `EmailSettings`.
+- Both WPF and Worker support `.AddUserSecrets<T>()` for local development secrets. Use user-secrets for the Anthropic API key and SMTP credentials.
+- `WorkerSettings` is intended for the scrape→match→email pipeline scheduling interval.

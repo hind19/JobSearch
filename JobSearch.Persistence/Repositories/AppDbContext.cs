@@ -7,7 +7,16 @@ using System.Threading.Tasks;
 
 namespace JobSearch.Persistence.Repositories
 {
-    internal class AppDbContext :DbContext
+    public class AppDbContext : DbContext
     {
+        public AppDbContext(DbContextOptions<AppDbContext> options)
+            : base(options)
+        {
+        }
+
+        // DbSets
+        // public DbSet<Job> Jobs => Set<Job>();
+        // public DbSet<User> Users => Set<User>();
+
     }
 }

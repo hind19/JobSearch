@@ -1,5 +1,5 @@
-﻿using JobSearch.WPF.ViewModels;
-using JobSearch.WPF.Views;
+﻿using JobSearch.WPF.Dialogs;
+using JobSearch.WPF.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace JobSearch.WPF;
@@ -11,7 +11,7 @@ public static class WpfServiceExtensions
     {
         services.AddSingleton<IServiceScopeFactory>(
             sp => sp.GetRequiredService<IServiceScopeFactory>());
-
+        services.AddSingleton<IDialogService, DialogService>();
         services.AddTransient<MainWindow>();
         services.AddTransient<UserProfileViewModel>();
 

@@ -29,6 +29,9 @@ public partial class UserProfileViewModel : ObservableObject
     private ImageSource? _cvIcon;
 
     [ObservableProperty]
+    private bool _isAnalyzing;
+
+    [ObservableProperty]
     private ObservableCollection<SkillItem> _skills = new();
     [ObservableProperty]
     private ObservableCollection<ClarifyingQuestionItem> _clarifyingQuestions = new();
@@ -39,7 +42,7 @@ public partial class UserProfileViewModel : ObservableObject
     {
         _userProfileService = userProfileService;
         _dialogService = dialogService;
-        LoadDesignTimeData();
+       // LoadDesignTimeData();
     }
 
     [RelayCommand]
@@ -75,37 +78,43 @@ public partial class UserProfileViewModel : ObservableObject
     [RelayCommand(CanExecute = nameof(CanAnalyzeCv))]
     private async Task AnalyzeCv()
     {
-        var fileBytes = File.ReadAllBytes(_cvFilePath);
-
-        var result = await _userProfileService.AnalyzeCvAsync(fileBytes, CancellationToken.None);
-
-        if (!result.IsSuccess)
+        IsAnalyzing = true;
+        try
         {
-            _dialogService.ShowError(result.ErrorMessage ?? "CV analysis failed.");
-            return;
+            var fileBytes = File.ReadAllBytes(_cvFilePath);
+
+            var result = await _userProfileService.AnalyzeCvAsync(fileBytes, CancellationToken.None);
+
+            if (!result.IsSuccess)
+            {
+                _dialogService.ShowError(result.ErrorMessage ?? "CV analysis failed.");
+                return;
+            }
+
+            Skills = new ObservableCollection<SkillItem>(result.Skills.Select(x => new SkillItem
+            {
+                IsFromCv = true,
+                ProficiencyLevel = x.ProficiencyLevel,
+                SkillName = x.SkillName,
+                YearsOfExperience = x.YearsOfExperience
+            }));
+
+            ClarifyingQuestions = new ObservableCollection<ClarifyingQuestionItem>(result.ClarifyingQuestions.Select(x => new ClarifyingQuestionItem
+            {
+                AnswerType = x.AnswerType,
+                SelectedCurrency = x.Currency,
+                QuestionText = x.QuestionText,
+                RangeFrom = x.RangeFrom,
+                RangeTo = x.RangeTo,
+                TextAnswer = x.TextAnswer,
+                SelectedAnswer = x.SelectedAnswer,
+                Options = x.Options,
+            }));
         }
-
-        Skills = new ObservableCollection<SkillItem>(result.Skills.Select(x => new SkillItem
+        finally
         {
-            IsFromCv = true,
-            ProficiencyLevel = x.ProficiencyLevel,
-             SkillName = x.SkillName,
-              YearsOfExperience = x.YearsOfExperience
-        }));
-
-        ClarifyingQuestions = new ObservableCollection<ClarifyingQuestionItem>(result.ClarifyingQuestions.Select(x => new ClarifyingQuestionItem
-        {
-            AnswerType = x.AnswerType,
-            SelectedCurrency = x.Currency,
-            QuestionText = x.QuestionText,
-            RangeFrom = x.RangeFrom,
-            RangeTo = x.RangeTo,
-            TextAnswer = x.TextAnswer,
-            SelectedAnswer = x.SelectedAnswer,
-            Options = x.Options,
-            //TODO: Fill Currencies if needed
-            // Currencies = x.
-        }));
+            IsAnalyzing = false;
+        }
     }
 
     [RelayCommand]

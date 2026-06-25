@@ -12,7 +12,7 @@ namespace JobSearch.AI.QuestionGeneratorService
 {
     public class QuestionGenerator : IQuestionGenerator
     {
-        private const string Model = "claude-sonnet-4-20250514";
+        private const string Model = "claude-sonnet-4-6";
         private const int MaxTokens = 1000;
 
         private readonly AnthropicClient _client;

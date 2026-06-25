@@ -8,7 +8,7 @@ namespace JobSearch.AI.CvParserService;
 
 public class CvParser : ICvParser
 {
-    private const string Model = "claude-sonnet-4-20250514";
+    private const string Model = "claude-sonnet-4-6";
     private const int MaxTokens = 2000;
 
     private readonly AnthropicClient _client;

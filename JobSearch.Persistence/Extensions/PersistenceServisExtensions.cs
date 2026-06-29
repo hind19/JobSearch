@@ -1,5 +1,4 @@
 ﻿using JobSearch.Persistence.Abstractions;
-using JobSearch.Persistence.Abstractions.Interfaces;
 using JobSearch.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -23,11 +22,12 @@ public static class PersistenceServiceExtensions
             options.UseSqlite(connectionString),
             ServiceLifetime.Scoped);
 
-        services.AddScoped<IJobRepository, JobRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<IUserJobMatchRepository,
-            UserJobMatchRepository>();
+        services.AddScoped<IUserProfileRepository, UserProfileRepository>();
+        services.AddScoped<IUserSkillRepository, UserSkillRepository>();
         services.AddScoped<IJobSiteRepository, JobSiteRepository>();
+        services.AddScoped<IJobRepository, JobRepository>();
+        services.AddScoped<IUserJobMatchRepository, UserJobMatchRepository>();
 
         return services;
     }

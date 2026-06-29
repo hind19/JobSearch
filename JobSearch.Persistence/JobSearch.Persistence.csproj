@@ -15,4 +15,14 @@
     <ProjectReference Include="..\JobSearch.Persistence.Abstractions\JobSearch.Persistence.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Scripts\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Scripts\CreateDatabase">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -134,15 +134,17 @@ namespace JobSearch.AI.QuestionGeneratorService
         }
 
         private static ClarifyingQuestionDto ToDto(
-            ClarifyingQuestionRaw raw) => new()
-            {
-                QuestionText = raw.QuestionText,
-                AnswerType = ParseAnswerType(raw.AnswerType),
-                Options = raw.Options,
-                RangeFrom = raw.RangeFrom,
-                RangeTo = raw.RangeTo,
-                Currency = raw.Currency
-            };
+    ClarifyingQuestionRaw raw) =>
+    new(
+        questionText: raw.QuestionText,
+        answerType: ParseAnswerType(raw.AnswerType),
+        options: raw.Options,
+        selectedAnswer: null,    // заполняется пользователем в UI
+        rangeFrom: raw.RangeFrom,
+        rangeTo: raw.RangeTo,
+        currency: raw.Currency,
+        textAnswer: null     // заполняется пользователем в UI
+    );
 
         private static AnswerType ParseAnswerType(string value) =>
             Enum.TryParse<AnswerType>(value, ignoreCase: true, out var result)

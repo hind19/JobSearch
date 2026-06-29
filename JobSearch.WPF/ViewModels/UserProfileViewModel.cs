@@ -96,7 +96,7 @@ public partial class UserProfileViewModel : ObservableObject
                 IsFromCv = true,
                 ProficiencyLevel = x.ProficiencyLevel,
                 SkillName = x.SkillName,
-                YearsOfExperience = x.YearsOfExperience
+                YearsOfExperience = (int)Math.Round(x.YearsOfExperience.GetValueOrDefault())
             }));
 
             ClarifyingQuestions = new ObservableCollection<ClarifyingQuestionItem>(result.ClarifyingQuestions.Select(x => new ClarifyingQuestionItem

@@ -48,6 +48,12 @@ public partial class App : System.Windows.Application
 
         await _host.StartAsync();
 
+        await using var scope = _host.Services.CreateAsyncScope();
+        var db = scope.ServiceProvider
+            .GetRequiredService<AppDbContext>();
+
+        await db.Database.EnsureCreatedAsync();
+
         var mainWindow = _host.Services
             .GetRequiredService<MainWindow>();
 

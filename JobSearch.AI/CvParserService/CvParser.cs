@@ -3,6 +3,7 @@ using Anthropic.SDK;
 using Anthropic.SDK.Messaging;
 using Microsoft.Extensions.Logging;
 using JobSearch.Application.Abstractions.Interfaces;
+using JobSearch.AI.Mapping;
 
 namespace JobSearch.AI.CvParserService;
 
@@ -113,9 +114,5 @@ public class CvParser : ICvParser
         }
     }
 
-    private CvAnalysisResult Fail(string message) => new()
-    {
-        IsSuccess = false,
-        ErrorMessage = message
-    };
+    private CvAnalysisResult Fail(string message) => CvAnalysisResult.Failure("Claude returned empty response.");
 }

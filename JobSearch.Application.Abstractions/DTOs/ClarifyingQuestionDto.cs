@@ -1,16 +1,35 @@
 ﻿using JobSearch.Application.Abstractions.Enums;
 
-namespace JobSearch.Application.Abstractions.DTOs
+namespace JobSearch.Application.Abstractions.DTOs;
+
+public class ClarifyingQuestionDto
 {
-    public class ClarifyingQuestionDto
+    public string QuestionText { get; }
+    public AnswerType AnswerType { get; }
+    public List<string> Options { get; }
+    public string? SelectedAnswer { get; }
+    public decimal? RangeFrom { get; }
+    public decimal? RangeTo { get; }
+    public string? Currency { get; }
+    public string? TextAnswer { get; }
+
+    public ClarifyingQuestionDto(
+        string questionText,
+        AnswerType answerType,
+        List<string> options,
+        string? selectedAnswer,
+        decimal? rangeFrom,
+        decimal? rangeTo,
+        string? currency,
+        string? textAnswer)
     {
-        public string QuestionText { get; init; } = string.Empty;
-        public AnswerType AnswerType { get; init; }
-        public List<string> Options { get; init; } = [];
-        public string? SelectedAnswer { get; init; }
-        public decimal? RangeFrom { get; init; }
-        public decimal? RangeTo { get; init; }
-        public string? Currency { get; init; }
-        public string? TextAnswer { get; init; }
+        QuestionText = questionText;
+        AnswerType = answerType;
+        Options = options;
+        SelectedAnswer = selectedAnswer;
+        RangeFrom = rangeFrom;
+        RangeTo = rangeTo;
+        Currency = currency;
+        TextAnswer = textAnswer;
     }
 }

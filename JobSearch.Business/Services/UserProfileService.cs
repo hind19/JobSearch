@@ -1,5 +1,5 @@
 using JobSearch.Application.Abstractions.Interfaces;
-using JobSearch.Persistence.Abstractions.Interfaces;
+using JobSearch.Persistence.Abstractions;
 
 namespace JobSearch.Business.Services;
 
@@ -23,8 +23,7 @@ public class UserProfileService : IUserProfileService
         byte[] pdfBytes,
         CancellationToken ct = default)
     {
-        var cvResult = await _cvParser
-            .ParseCvAsync(pdfBytes, ct);
+        var cvResult = await _cvParser.ParseCvAsync(pdfBytes, ct);
 
         if (!cvResult.IsSuccess)
             return cvResult;
@@ -32,9 +31,6 @@ public class UserProfileService : IUserProfileService
         var questions = await _questionGenerator
             .GetClarifyingQuestionsAsync(cvResult, ct);
 
-        cvResult.ClarifyingQuestions = questions;
-
-
-        return cvResult;
+        return CvAnalysisResult.WithQuestions(cvResult, questions);
     }
 }

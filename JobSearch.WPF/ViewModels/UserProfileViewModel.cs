@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using JobSearch.Application.Abstractions.DTOs;
 using JobSearch.Application.Abstractions.Enums;
 using JobSearch.Application.Abstractions.Interfaces;
 using JobSearch.WPF.Dialogs;
@@ -7,6 +8,7 @@ using JobSearch.WPF.Models;
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace JobSearch.WPF.ViewModels;
@@ -18,6 +20,8 @@ public partial class UserProfileViewModel : ObservableObject
     private readonly IUserProfileService _userProfileService;
 
     private readonly IDialogService _dialogService;
+
+    private CvAnalysisResult? _lastAnalysisResult;
 
     [ObservableProperty]
     private string _cvFileName = string.Empty;
@@ -110,6 +114,8 @@ public partial class UserProfileViewModel : ObservableObject
                 SelectedAnswer = x.SelectedAnswer,
                 Options = x.Options,
             }));
+
+            _lastAnalysisResult = result;
         }
         finally
         {
@@ -131,9 +137,88 @@ public partial class UserProfileViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void SaveProfile()
+    private async Task SaveProfile()
     {
-        // stub: call IUserProfileService.SaveAsync(profile)
+        IsAnalyzing = true;
+        try
+        {
+            var candidateEmail = _lastAnalysisResult?.Candidate.Email;
+            Guid userId;
+
+            if (!string.IsNullOrWhiteSpace(candidateEmail))
+            {
+                var existingId = await _userProfileService
+                    .FindUserByEmailAsync(candidateEmail, CancellationToken.None);
+
+                if (existingId.HasValue)
+                {
+                    bool overwrite = _dialogService.ShowConfirmation(
+                        $"Пользователь с email «{candidateEmail}» уже существует. Перезаписать профиль?",
+                        "Профиль уже существует");
+                    if (!overwrite)
+                        return;
+
+                    userId = existingId.Value;
+                }
+                else
+                {
+                    userId = Guid.NewGuid();
+                }
+            }
+            else
+            {
+                // TODO: заменить на реальный userId, когда появится UserContext/Identity.
+                userId = Guid.NewGuid();
+            }
+
+            //TODO: привести в соответствие тип данных у YearsOfExperience (decimal vs int)
+            var skills = Skills.Select(s => new UserSkillDto(
+                id: Guid.NewGuid(),
+                userId: userId,
+                skillName: s.SkillName,
+                proficiencyLevel: s.ProficiencyLevel,
+                yearsOfExperience: s.YearsOfExperience == 0 ? null : (decimal?)s.YearsOfExperience,
+                extractedByClaude: s.IsFromCv
+            )).ToList();
+
+            // Candidate / WorkExperience / DetectedLanguages / DesiredRoles / ClaudeReadyProfile
+            // в UI не редактируются — берём из результата последнего анализа.
+            // TODO: добавить редактирование, если потребуется в UI.
+            var result = new CvAnalysisResult(
+                isSuccess: true,
+                errorMessage: null,
+                candidate: _lastAnalysisResult?.Candidate ?? new CandidateInfo(null, null, null, null, null),
+                skills: skills,
+                workExperience: _lastAnalysisResult?.WorkExperience ?? new List<WorkExperienceDto>(),
+                detectedLanguages: _lastAnalysisResult?.DetectedLanguages ?? new List<string>(),
+                desiredRoles: _lastAnalysisResult?.DesiredRoles ?? new List<string>(),
+                claudeReadyProfile: _lastAnalysisResult?.ClaudeReadyProfile ?? string.Empty,
+                clarifyingQuestions: new List<ClarifyingQuestionDto>() // ответы передаются отдельным параметром ниже
+            );
+
+            var answers = ClarifyingQuestions.Select(q => new ClarifyingQuestionDto(
+                questionText: q.QuestionText,
+                answerType: q.AnswerType,
+                options: q.Options,
+                selectedAnswer: q.SelectedAnswer,
+                rangeFrom: q.RangeFrom,
+                rangeTo: q.RangeTo,
+                currency: q.SelectedCurrency,
+                textAnswer: q.TextAnswer
+            )).ToList();
+            
+            await _userProfileService.SaveProfileAsync(userId, result, answers, CancellationToken.None);
+
+            _dialogService.ShowInfo("Профиль успешно сохранён.");
+        }
+        catch (Exception ex)
+        {
+            _dialogService.ShowError($"Не удалось сохранить профиль: {ex.Message}");
+        }
+        finally
+        {
+            IsAnalyzing = false;
+        }
     }
 
     [RelayCommand]

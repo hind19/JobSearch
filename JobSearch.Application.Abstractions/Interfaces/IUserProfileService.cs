@@ -8,5 +8,7 @@ public interface IUserProfileService
 
     Task<Guid?> FindUserByEmailAsync(string email, CancellationToken ct = default);
 
+    Task<List<UserSkillDto>> GetUserSkillsAsync(Guid userId, CancellationToken ct = default);
+
     Task SaveProfileAsync(Guid userId, CvAnalysisResult result, List<ClarifyingQuestionDto> answers, CancellationToken ct = default);
 }

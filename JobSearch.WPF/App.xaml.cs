@@ -21,6 +21,10 @@ public partial class App : System.Windows.Application
     {
         base.OnStartup(e);
 
+        // Prevent WPF from shutting down when the login window closes (zero open windows).
+        // We call Shutdown() explicitly: on cancel, and when the main window closes.
+        Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+
         _host = Host.CreateDefaultBuilder()
             .ConfigureAppConfiguration((context, config) =>
             {
@@ -57,9 +61,19 @@ public partial class App : System.Windows.Application
 
         await db.Database.EnsureCreatedAsync();
 
-        var mainWindow = _host.Services
-            .GetRequiredService<MainWindow>();
+        var loginWindow = _host.Services.GetRequiredService<LoginWindow>();
+        if (loginWindow.ShowDialog() != true)
+        {
+            Shutdown();
+            return;
+        }
 
+        var mainWindow = _host.Services.GetRequiredService<MainWindow>();
+
+        if (loginWindow.ViewModel.LoggedInUserId.HasValue)
+            await mainWindow.ViewModel.LoadUserProfileAsync(loginWindow.ViewModel.LoggedInUserId.Value);
+
+        mainWindow.Closed += (_, _) => Shutdown();
         mainWindow.Show();
     }
 

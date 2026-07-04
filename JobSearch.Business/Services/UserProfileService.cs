@@ -1,6 +1,7 @@
 using JobSearch.Application.Abstractions.DTOs;
 using JobSearch.Application.Abstractions.Enums;
 using JobSearch.Application.Abstractions.Interfaces;
+using JobSearch.Business.Mapping;
 using JobSearch.Persistence.Abstractions;
 using JobSearch.Persistence.Abstractions.DTOs;
 
@@ -41,6 +42,14 @@ public class UserProfileService : IUserProfileService
             .GetClarifyingQuestionsAsync(cvResult, ct);
 
         return CvAnalysisResult.WithQuestions(cvResult, questions);
+    }
+
+    public async Task<List<UserSkillDto>> GetUserSkillsAsync(
+        Guid userId,
+        CancellationToken ct = default)
+    {
+        var dtos = await _userSkillRepository.GetByUserIdAsync(userId, ct);
+        return dtos.Select(BusinessMapper.ToDto).ToList();
     }
 
     public async Task<Guid?> FindUserByEmailAsync(

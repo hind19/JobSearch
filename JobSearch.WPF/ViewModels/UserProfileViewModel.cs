@@ -23,6 +23,8 @@ public partial class UserProfileViewModel : ObservableObject
 
     private CvAnalysisResult? _lastAnalysisResult;
 
+    private Guid? _currentUserId;
+
     [ObservableProperty]
     private string _cvFileName = string.Empty;
 
@@ -142,33 +144,40 @@ public partial class UserProfileViewModel : ObservableObject
         IsAnalyzing = true;
         try
         {
-            var candidateEmail = _lastAnalysisResult?.Candidate.Email;
             Guid userId;
 
-            if (!string.IsNullOrWhiteSpace(candidateEmail))
+            if (_currentUserId.HasValue)
             {
-                var existingId = await _userProfileService
-                    .FindUserByEmailAsync(candidateEmail, CancellationToken.None);
+                userId = _currentUserId.Value;
+            }
+            else
+            {
+                var candidateEmail = _lastAnalysisResult?.Candidate.Email;
 
-                if (existingId.HasValue)
+                if (!string.IsNullOrWhiteSpace(candidateEmail))
                 {
-                    bool overwrite = _dialogService.ShowConfirmation(
-                        $"Пользователь с email «{candidateEmail}» уже существует. Перезаписать профиль?",
-                        "Профиль уже существует");
-                    if (!overwrite)
-                        return;
+                    var existingId = await _userProfileService
+                        .FindUserByEmailAsync(candidateEmail, CancellationToken.None);
 
-                    userId = existingId.Value;
+                    if (existingId.HasValue)
+                    {
+                        bool overwrite = _dialogService.ShowConfirmation(
+                            $"Пользователь с email «{candidateEmail}» уже существует. Перезаписать профиль?",
+                            "Профиль уже существует");
+                        if (!overwrite)
+                            return;
+
+                        userId = existingId.Value;
+                    }
+                    else
+                    {
+                        userId = Guid.NewGuid();
+                    }
                 }
                 else
                 {
                     userId = Guid.NewGuid();
                 }
-            }
-            else
-            {
-                // TODO: заменить на реальный userId, когда появится UserContext/Identity.
-                userId = Guid.NewGuid();
             }
 
             //TODO: привести в соответствие тип данных у YearsOfExperience (decimal vs int)
@@ -225,6 +234,21 @@ public partial class UserProfileViewModel : ObservableObject
     private void Cancel()
     {
         // stub: navigate to previous view or close window
+    }
+
+    public async Task LoadUserProfileAsync(Guid userId, CancellationToken ct = default)
+    {
+        _currentUserId = userId;
+
+        var skills = await _userProfileService.GetUserSkillsAsync(userId, ct);
+
+        Skills = new ObservableCollection<SkillItem>(skills.Select(s => new SkillItem
+        {
+            IsFromCv = s.ExtractedByClaude,
+            SkillName = s.SkillName,
+            ProficiencyLevel = s.ProficiencyLevel,
+            YearsOfExperience = (int)Math.Round(s.YearsOfExperience.GetValueOrDefault())
+        }));
     }
 
     partial void OnCvFileNameChanged(string value) => AnalyzeCvCommand.NotifyCanExecuteChanged();

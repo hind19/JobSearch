@@ -10,7 +10,7 @@ namespace JobSearch.AI.CvParserService;
 public class CvParser : ICvParser
 {
     private const string Model = "claude-sonnet-4-6";
-    private const int MaxTokens = 2000;
+    private const int MaxTokens = 8192;
 
     private readonly AnthropicClient _client;
     private readonly ILogger<CvParser> _logger;
@@ -69,10 +69,23 @@ public class CvParser : ICvParser
                 .FirstOrDefault()
                 ?.Text;
 
+
             if (string.IsNullOrWhiteSpace(json))
             {
                 return Fail("Claude returned empty response.");
             }
+
+            // Убираем markdown-обёртку если Claude всё равно её добавил
+            json = json.Trim();
+            if (json.StartsWith("```"))
+            {
+                json = json
+                    .Replace("```json", string.Empty)
+                    .Replace("```", string.Empty)
+                    .Trim();
+            }
+
+            var raw = JsonSerializer.Deserialize<CvAnalysisRaw>(json);
 
             return DeserializeAiResponse(json);
         }

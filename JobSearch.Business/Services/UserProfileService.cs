@@ -1,4 +1,4 @@
-using JobSearch.Application.Abstractions.DTOs;
+﻿using JobSearch.Application.Abstractions.DTOs;
 using JobSearch.Application.Abstractions.Enums;
 using JobSearch.Application.Abstractions.Interfaces;
 using JobSearch.Business.Mapping;
@@ -14,19 +14,22 @@ public class UserProfileService : IUserProfileService
     private readonly IUserRepository _userRepository;
     private readonly IUserProfileRepository _userProfileRepository;
     private readonly IUserSkillRepository _userSkillRepository;
+    private readonly IProfileEnricher _profileEnricher;
 
     public UserProfileService(
-        ICvParser cvParser,
-        IQuestionGenerator questionGenerator,
         IUserRepository userRepository,
         IUserProfileRepository userProfileRepository,
-        IUserSkillRepository userSkillRepository)
+        IUserSkillRepository userSkillRepository,
+        ICvParser cvParser,
+        IQuestionGenerator questionGenerator,
+        IProfileEnricher profileEnricher)
     {
-        _cvParser = cvParser;
-        _questionGenerator = questionGenerator;
         _userRepository = userRepository;
         _userProfileRepository = userProfileRepository;
         _userSkillRepository = userSkillRepository;
+        _cvParser = cvParser;
+        _questionGenerator = questionGenerator;
+        _profileEnricher = profileEnricher;
     }
 
     public async Task<CvAnalysisResult> AnalyzeCvAsync(
@@ -61,60 +64,54 @@ public class UserProfileService : IUserProfileService
     }
 
     public async Task SaveProfileAsync(
-        Guid userId,
-        CvAnalysisResult result,
-        List<ClarifyingQuestionDto> answers,
-        CancellationToken ct = default)
+     Guid userId,
+     CvAnalysisResult result,
+     List<ClarifyingQuestionDto> answers,
+     CancellationToken ct = default)
     {
-        if (!await _userRepository.ExistsAsync(userId, ct))
-        {
-            await _userRepository.CreateAsync(new UserPersistenceDto(
-                id: userId,
-                email: result.Candidate.Email ?? string.Empty,
-                name: result.Candidate.FullName ?? string.Empty,
-                createdAt: DateTime.UtcNow,
-                isActive: true), ct);
-        }
+        // 1. Обогащаем ClaudeReadyProfile ответами на уточняющие вопросы
+        var enrichedProfile = await _profileEnricher.EnrichAsync(
+            result.ClaudeReadyProfile, answers, ct);
 
-        var salaryAnswer = answers.FirstOrDefault(a =>
-            a.AnswerType == AnswerType.NumericRange && a.Currency is not null);
+        // 2. Извлекаем зарплатные данные из ответов
+        var salaryAnswer = answers.FirstOrDefault(
+            q => q.AnswerType == Application.Abstractions.Enums.AnswerType.NumericRange
+              && q.RangeFrom is not null);
 
-        var now = DateTime.UtcNow;
-        var existingProfile = await _userProfileRepository.GetByUserIdAsync(userId, ct);
+        // 3. Создаём пользователя
+        // TODO: заменить на реальный Email/Name когда появится UserContext
+        var userDto = new UserPersistenceDto(
+            id: userId,
+            email: result.Candidate.Email ?? $"{userId}@placeholder.local",
+            name: result.Candidate.FullName ?? "Unknown",
+            createdAt: DateTime.UtcNow,
+            isActive: true);
 
+        await _userRepository.CreateAsync(userDto, ct);
+
+        // 4. Создаём профиль
         var profileDto = new UserProfilePersistenceDto(
-            id: existingProfile?.Id ?? Guid.NewGuid(),
+            id: Guid.NewGuid(),
             userId: userId,
-            claudeReadyProfile: result.ClaudeReadyProfile,
-            desiredRoles: string.Join(", ", result.DesiredRoles),
-            desiredSalaryMin: salaryAnswer?.RangeFrom.HasValue == true
-                ? (int)salaryAnswer.RangeFrom.Value : null,
-            desiredSalaryMax: salaryAnswer?.RangeTo.HasValue == true
-                ? (int)salaryAnswer.RangeTo.Value : null,
-            salaryCurrency: salaryAnswer?.Currency ?? "USD",
-            locationPreference: string.Empty,
-            cvParsedAt: now,
-            cvFileHash: string.Empty,
-            updatedAt: now);
+            claudeReadyProfile: enrichedProfile,
+            desiredRoles: string.Join(",", result.DesiredRoles),
+            desiredSalaryMin: salaryAnswer?.RangeFrom is not null
+                ? (int)salaryAnswer.RangeFrom : null,
+            desiredSalaryMax: salaryAnswer?.RangeTo is not null
+                ? (int)salaryAnswer.RangeTo : null,
+            salaryCurrency: salaryAnswer?.Currency ?? string.Empty,
+            locationPreference: string.Empty, // TODO: вытащить из answers если будет такой вопрос
+            cvParsedAt: DateTime.UtcNow,
+            cvFileHash: string.Empty, // TODO: передавать хэш файла из VM
+            updatedAt: DateTime.UtcNow);
 
-        if (existingProfile is not null)
-            await _userProfileRepository.UpdateAsync(profileDto, ct);
-        else
-            await _userProfileRepository.CreateAsync(profileDto, ct);
+        await _userProfileRepository.CreateAsync(profileDto, ct);
 
+        // TODO: уточнить поведение при перезаписи профиля (Create vs Update для User и UserProfile)
+
+        // 5. Сохраняем скиллы: сначала удаляем старые, затем вставляем актуальные
         await _userSkillRepository.DeleteAllByUserIdAsync(userId, ct);
-
-        var skillDtos = result.Skills
-            .Select(s => new UserSkillPersistenceDto(
-                id: s.Id == Guid.Empty ? Guid.NewGuid() : s.Id,
-                userId: userId,
-                skillName: s.SkillName,
-                proficiencyLevel: s.ProficiencyLevel.ToString(),
-                yearsOfExperience: s.YearsOfExperience,
-                extractedByClaude: s.ExtractedByClaude))
-            .ToList();
-
-        if (skillDtos.Count > 0)
-            await _userSkillRepository.CreateRangeAsync(skillDtos, ct);
+        var skillPersistenceDtos = BusinessMapper.ToPersistenceDto(result.Skills);
+        await _userSkillRepository.CreateRangeAsync(skillPersistenceDtos, ct);
     }
 }

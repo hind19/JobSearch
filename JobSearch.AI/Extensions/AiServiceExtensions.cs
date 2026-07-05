@@ -1,9 +1,10 @@
 ﻿using Anthropic.SDK;
+using JobSearch.AI.CvParserService;
+using JobSearch.AI.QuestionGeneratorService;
+using JobSearch.AI.Services;
 using JobSearch.Application.Abstractions.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using JobSearch.AI.CvParserService;
-using JobSearch.AI.QuestionGeneratorService;
 
 namespace JobSearch.AI;
 
@@ -24,6 +25,7 @@ public static class AiServiceExtensions
 
         services.AddScoped<ICvParser, CvParser>();
         services.AddScoped<IQuestionGenerator, QuestionGenerator>();
+        services.AddScoped<IProfileEnricher, ProfileEnricher>();
 
         return services;
     }

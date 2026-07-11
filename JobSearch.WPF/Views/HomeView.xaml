@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="JobSearch.WPF.Views.HomeView"
+<UserControl x:Class="JobSearch.WPF.Views.HomeView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
@@ -7,14 +7,14 @@
           Width="520">
         <StackPanel>
 
-            <TextBlock Text="Что сделаем сегодня?"
+            <TextBlock Text="{DynamicResource Home_Title}"
                        FontSize="22"
                        FontWeight="Medium"
                        Foreground="#212121"
                        HorizontalAlignment="Center"
                        Margin="0,0,0,6" />
 
-            <TextBlock Text="Выберите раздел для работы"
+            <TextBlock Text="{DynamicResource Home_Subtitle}"
                        FontSize="14"
                        Foreground="#757575"
                        HorizontalAlignment="Center"
@@ -35,18 +35,18 @@
                         <TextBlock Text="📄"
                                    FontSize="28"
                                    Margin="0,0,0,12" />
-                        <TextBlock Text="Анализ CV"
+                        <TextBlock Text="{DynamicResource Home_CvCard_Title}"
                                    FontSize="16"
                                    FontWeight="Medium"
                                    Foreground="#212121"
                                    Margin="0,0,0,8" />
-                        <TextBlock TextWrapping="Wrap"
+                        <TextBlock Text="{DynamicResource Home_CvCard_Description}"
+                                   TextWrapping="Wrap"
                                    FontSize="13"
                                    Foreground="#757575"
                                    LineHeight="20"
-                                   Text="Загрузите резюме — Claude извлечёт навыки и составит профиль для поиска вакансий"
                                    Margin="0,0,0,20" />
-                        <Button Content="Открыть"
+                        <Button Content="{DynamicResource Common_Open}"
                                 Command="{Binding OpenProfileCommand}"
                                 Style="{StaticResource OutlineButtonStyle}"
                                 Padding="0,10" />
@@ -61,18 +61,18 @@
                         <TextBlock Text="🌐"
                                    FontSize="28"
                                    Margin="0,0,0,12" />
-                        <TextBlock Text="Сайты поиска"
+                        <TextBlock Text="{DynamicResource Home_JobSitesCard_Title}"
                                    FontSize="16"
                                    FontWeight="Medium"
                                    Foreground="#212121"
                                    Margin="0,0,0,8" />
-                        <TextBlock TextWrapping="Wrap"
+                        <TextBlock Text="{DynamicResource Home_JobSitesCard_Description}"
+                                   TextWrapping="Wrap"
                                    FontSize="13"
                                    Foreground="#757575"
                                    LineHeight="20"
-                                   Text="Настройте сайты с вакансиями — Worker будет ежедневно проверять первую страницу результатов"
                                    Margin="0,0,0,20" />
-                        <Button Content="Открыть"
+                        <Button Content="{DynamicResource Common_Open}"
                                 Command="{Binding OpenJobSitesCommand}"
                                 Style="{StaticResource OutlineButtonStyle}"
                                 Padding="0,10" />

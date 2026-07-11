@@ -32,11 +32,11 @@
 
         <DataTemplate x:Key="NumericRangeTemplate">
             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                <TextBlock Text="от" VerticalAlignment="Center" Foreground="#757575" Margin="0,0,8,0"/>
+                <TextBlock Text="{DynamicResource UserProfile_RangeFrom}" VerticalAlignment="Center" Foreground="#757575" Margin="0,0,8,0"/>
                 <TextBox Text="{Binding RangeFrom, Mode=TwoWay, TargetNullValue='', UpdateSourceTrigger=PropertyChanged}"
                          Width="90" Padding="8,6" VerticalContentAlignment="Center"/>
                 <TextBlock Text="—" VerticalAlignment="Center" Foreground="#757575" Margin="8,0"/>
-                <TextBlock Text="до" VerticalAlignment="Center" Foreground="#757575" Margin="0,0,8,0"/>
+                <TextBlock Text="{DynamicResource UserProfile_RangeTo}" VerticalAlignment="Center" Foreground="#757575" Margin="0,0,8,0"/>
                 <TextBox Text="{Binding RangeTo, Mode=TwoWay, TargetNullValue='', UpdateSourceTrigger=PropertyChanged}"
                          Width="90" Padding="8,6" VerticalContentAlignment="Center"/>
                 <ComboBox ItemsSource="{Binding Currencies}"
@@ -61,7 +61,7 @@
                 <!-- ═══════════════ Resume section -->
                 <Border Style="{StaticResource CardStyle}">
                     <StackPanel>
-                        <TextBlock Text="Резюме" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,16"/>
+                        <TextBlock Text="{DynamicResource UserProfile_Section_Resume}" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,16"/>
 
                         <Border BorderBrush="#DADADA" BorderThickness="1" CornerRadius="6" Padding="16">
                             <Grid>
@@ -83,7 +83,7 @@
 
                                 <!-- File name + metadata -->
                                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding CvFileName, FallbackValue='Файл не выбран'}"
+                                    <TextBlock Text="{Binding CvFileDisplayName}"
                                                FontWeight="SemiBold" FontSize="14"/>
                                     <TextBlock Text="{Binding CvFileInfo}"
                                                Foreground="#757575" FontSize="12" Margin="0,3,0,0"/>
@@ -91,11 +91,11 @@
 
                                 <!-- Action buttons -->
                                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Button Content="⬆  Открыть"
+                                    <Button Content="{DynamicResource UserProfile_BrowseCv}"
                                             Command="{Binding ReplaceCvCommand}"
                                             Style="{StaticResource OutlineButtonStyle}"
                                             Padding="14,8" Margin="0,0,10,0"/>
-                                    <Button Content="▶  Анализировать"
+                                    <Button Content="{DynamicResource UserProfile_AnalyzeCv}"
                                             Command="{Binding AnalyzeCvCommand}"
                                             Style="{StaticResource OutlineButtonStyle}"
                                             Padding="14,8"/>
@@ -103,7 +103,7 @@
                             </Grid>
                         </Border>
 
-                        <TextBlock Text="Выполняется анализ CV..."
+                        <TextBlock Text="{DynamicResource UserProfile_Analyzing}"
                                    Foreground="#D32F2F"
                                    FontSize="12"
                                    FontWeight="SemiBold"
@@ -118,15 +118,15 @@
 
                         <!-- Header row with legend -->
                         <Grid Margin="0,0,0,14">
-                            <TextBlock Text="Навыки" FontSize="15" FontWeight="SemiBold"
+                            <TextBlock Text="{DynamicResource UserProfile_Section_Skills}" FontSize="15" FontWeight="SemiBold"
                                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                                 <Border Background="#E3F2FD" CornerRadius="4" Padding="7,2">
-                                    <TextBlock Text="из CV" FontSize="11" Foreground="#1565C0" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{DynamicResource UserProfile_SkillBadge_FromCv}" FontSize="11" Foreground="#1565C0" FontWeight="SemiBold"/>
                                 </Border>
                                 <TextBlock Text=" / " Foreground="#BDBDBD" VerticalAlignment="Center"/>
                                 <Border Background="#FFF3E0" CornerRadius="4" Padding="7,2">
-                                    <TextBlock Text="добавлено вручную" FontSize="11" Foreground="#BF360C" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{DynamicResource UserProfile_SkillBadge_Manual}" FontSize="11" Foreground="#BF360C" FontWeight="SemiBold"/>
                                 </Border>
                             </StackPanel>
                         </Grid>
@@ -155,7 +155,7 @@
                             <DataGrid.Columns>
 
                                 <!-- Source badge -->
-                                <DataGridTemplateColumn Header="Источник" Width="108" IsReadOnly="True">
+                                <DataGridTemplateColumn Header="{StaticResource UserProfile_Col_Source}" Width="108" IsReadOnly="True">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Border CornerRadius="4" Padding="7,2"
@@ -189,7 +189,7 @@
                                 </DataGridTemplateColumn>
 
                                 <!-- Skill name — always-editable TextBox -->
-                                <DataGridTemplateColumn Header="Навык" Width="*">
+                                <DataGridTemplateColumn Header="{StaticResource UserProfile_Col_Skill}" Width="*">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <TextBox Text="{Binding SkillName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -201,7 +201,7 @@
                                 </DataGridTemplateColumn>
 
                                 <!-- Proficiency level ComboBox -->
-                                <DataGridTemplateColumn Header="Уровень" Width="168">
+                                <DataGridTemplateColumn Header="{StaticResource UserProfile_Col_Level}" Width="168">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <ComboBox SelectedItem="{Binding ProficiencyLevel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -219,7 +219,7 @@
                                 </DataGridTemplateColumn>
 
                                 <!-- Years of experience -->
-                                <DataGridTemplateColumn Header="Опыт, лет" Width="90">
+                                <DataGridTemplateColumn Header="{StaticResource UserProfile_Col_Experience}" Width="90">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <TextBox Text="{Binding YearsOfExperience, Mode=TwoWay,
@@ -240,7 +240,8 @@
                                                         RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                     CommandParameter="{Binding}"
                                                     VerticalAlignment="Center" HorizontalAlignment="Center"
-                                                    Cursor="Hand" ToolTip="Удалить">
+                                                    Cursor="Hand"
+                                                    ToolTip="{DynamicResource UserProfile_DeleteTooltip}">
                                                 <Button.Style>
                                                     <Style TargetType="Button">
                                                         <Setter Property="Background"      Value="Transparent"/>
@@ -273,7 +274,7 @@
                             </DataGrid.Columns>
                         </DataGrid>
 
-                        <Button Content="+ Добавить навык"
+                        <Button Content="{DynamicResource UserProfile_AddSkill}"
                                 Command="{Binding AddSkillCommand}"
                                 Style="{StaticResource OutlineButtonStyle}"
                                 Padding="14,8" Margin="0,14,0,0"
@@ -284,7 +285,7 @@
                 <!-- ═══════════════ Clarifying questions section -->
                 <Border Style="{StaticResource CardStyle}">
                     <StackPanel>
-                        <TextBlock Text="Уточняющие вопросы" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,16"/>
+                        <TextBlock Text="{DynamicResource UserProfile_Section_Questions}" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,16"/>
 
                         <ItemsControl ItemsSource="{Binding ClarifyingQuestions, Mode=TwoWay}">
                             <ItemsControl.ItemTemplate>
@@ -345,11 +346,11 @@
 
                 <!-- ═══════════════ Action buttons -->
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,4,0,0">
-                    <Button Content="← Назад"
+                    <Button Content="{DynamicResource Common_Back}"
                             Command="{Binding CancelCommand}"
                             Style="{StaticResource OutlineButtonStyle}"
                             Padding="22,10" Margin="0,0,12,0"/>
-                    <Button Content="✓  Сохранить профиль"
+                    <Button Content="{DynamicResource UserProfile_SaveProfile}"
                             Command="{Binding SaveProfileCommand}"
                             Style="{StaticResource PrimaryButtonStyle}"
                             Padding="22,10"/>

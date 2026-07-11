@@ -66,19 +66,19 @@
                                Margin="0,0,0,28"/>
 
                     <!-- Email -->
-                    <TextBlock Text="Email" Style="{StaticResource FieldLabelStyle}" Margin="0,0,0,6"/>
+                    <TextBlock Text="{DynamicResource Login_Email}" Style="{StaticResource FieldLabelStyle}" Margin="0,0,0,6"/>
                     <TextBox Text="{Binding Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                              Style="{StaticResource FormFieldStyle}"/>
 
                     <!-- Password -->
-                    <TextBlock Text="Пароль" Style="{StaticResource FieldLabelStyle}"/>
+                    <TextBlock Text="{DynamicResource Login_Password}" Style="{StaticResource FieldLabelStyle}"/>
                     <PasswordBox x:Name="PasswordBox"
                                  Style="{StaticResource FormPasswordStyle}"
                                  PasswordChanged="PasswordBox_PasswordChanged"/>
 
                     <!-- Confirm Password — shown only for new users -->
                     <StackPanel Visibility="{Binding IsNewUser, Converter={StaticResource BoolToVis}}">
-                        <TextBlock Text="Подтвердите пароль" Style="{StaticResource FieldLabelStyle}"/>
+                        <TextBlock Text="{DynamicResource Login_ConfirmPassword}" Style="{StaticResource FieldLabelStyle}"/>
                         <PasswordBox x:Name="ConfirmPasswordBox"
                                      Style="{StaticResource FormPasswordStyle}"
                                      PasswordChanged="ConfirmPasswordBox_PasswordChanged"/>
@@ -109,7 +109,7 @@
                                 Padding="14,8"/>
 
                         <Button Grid.Column="2"
-                                Content="Отмена"
+                                Content="{DynamicResource Common_Cancel}"
                                 Command="{Binding CancelCommand}"
                                 Style="{StaticResource OutlineButtonStyle}"
                                 Padding="14,8"/>

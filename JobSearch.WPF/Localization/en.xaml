@@ -1,0 +1,76 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- Common -->
+    <sys:String x:Key="Common_Back">← Back</sys:String>
+    <sys:String x:Key="Common_Open">Open</sys:String>
+    <sys:String x:Key="Common_Cancel">Cancel</sys:String>
+
+    <!-- Home -->
+    <sys:String x:Key="Home_Title">What shall we do today?</sys:String>
+    <sys:String x:Key="Home_Subtitle">Select a section to work with</sys:String>
+    <sys:String x:Key="Home_CvCard_Title">CV Analysis</sys:String>
+    <sys:String x:Key="Home_CvCard_Description">Upload your CV — Claude will extract skills and build a profile for job search</sys:String>
+    <sys:String x:Key="Home_JobSitesCard_Title">Job Sites</sys:String>
+    <sys:String x:Key="Home_JobSitesCard_Description">Configure job sites — Worker will check the first page of results daily</sys:String>
+
+    <!-- UserProfile -->
+    <sys:String x:Key="UserProfile_Section_Resume">Resume</sys:String>
+    <sys:String x:Key="UserProfile_NoFile">No file selected</sys:String>
+    <sys:String x:Key="UserProfile_BrowseCv">⬆  Browse</sys:String>
+    <sys:String x:Key="UserProfile_AnalyzeCv">▶  Analyze</sys:String>
+    <sys:String x:Key="UserProfile_Analyzing">Analyzing CV...</sys:String>
+    <sys:String x:Key="UserProfile_Section_Skills">Skills</sys:String>
+    <sys:String x:Key="UserProfile_SkillBadge_FromCv">from CV</sys:String>
+    <sys:String x:Key="UserProfile_SkillBadge_Manual">added manually</sys:String>
+    <sys:String x:Key="UserProfile_Col_Source">Source</sys:String>
+    <sys:String x:Key="UserProfile_Col_Skill">Skill</sys:String>
+    <sys:String x:Key="UserProfile_Col_Level">Level</sys:String>
+    <sys:String x:Key="UserProfile_Col_Experience">Experience, yr</sys:String>
+    <sys:String x:Key="UserProfile_DeleteTooltip">Delete</sys:String>
+    <sys:String x:Key="UserProfile_AddSkill">+ Add skill</sys:String>
+    <sys:String x:Key="UserProfile_Section_Questions">Clarifying questions</sys:String>
+    <sys:String x:Key="UserProfile_RangeFrom">from</sys:String>
+    <sys:String x:Key="UserProfile_RangeTo">to</sys:String>
+    <sys:String x:Key="UserProfile_SaveProfile">✓  Save profile</sys:String>
+    <sys:String x:Key="UserProfile_FileSizeInfo">Loaded {0} kB</sys:String>
+    <sys:String x:Key="UserProfile_EmailExists_Message">A user with email "{0}" already exists. Overwrite the profile?</sys:String>
+    <sys:String x:Key="UserProfile_EmailExists_Title">Profile already exists</sys:String>
+    <sys:String x:Key="UserProfile_SaveSuccess">Profile saved successfully.</sys:String>
+    <sys:String x:Key="UserProfile_SaveError">Failed to save profile: {0}</sys:String>
+
+    <!-- JobSites -->
+    <sys:String x:Key="JobSites_Placeholder">Job sites — coming soon</sys:String>
+
+    <!-- Login -->
+    <sys:String x:Key="Login_WindowTitle">JobSearch — Sign In</sys:String>
+    <sys:String x:Key="Login_Email">Email</sys:String>
+    <sys:String x:Key="Login_Password">Password</sys:String>
+    <sys:String x:Key="Login_ConfirmPassword">Confirm password</sys:String>
+    <sys:String x:Key="Login_FormTitle_Existing">Sign in</sys:String>
+    <sys:String x:Key="Login_FormTitle_New">New user</sys:String>
+    <sys:String x:Key="Login_Button_SignIn">Sign in</sys:String>
+    <sys:String x:Key="Login_Button_CreateProfile">Create profile</sys:String>
+    <sys:String x:Key="Login_Button_NewUser">New user</sys:String>
+    <sys:String x:Key="Login_Error_NotFound">No user found with this email.</sys:String>
+    <sys:String x:Key="Login_Error_Prefix">Sign-in error: {0}</sys:String>
+
+    <!-- Dialogs -->
+    <sys:String x:Key="Dialog_Warning">Warning</sys:String>
+    <sys:String x:Key="Dialog_Error">Error</sys:String>
+    <sys:String x:Key="Dialog_Info">Information</sys:String>
+    <sys:String x:Key="Dialog_Confirmation">Confirmation</sys:String>
+
+    <!-- Error messages -->
+    <sys:String x:Key="Error_ReadFile">Error reading file: {0}</sys:String>
+    <sys:String x:Key="Error_CvAnalysisFailed">CV analysis failed.</sys:String>
+
+    <!-- ProficiencyLevel enum -->
+    <sys:String x:Key="ProficiencyLevel_NotSpecified">—</sys:String>
+    <sys:String x:Key="ProficiencyLevel_Beginner">Beginner</sys:String>
+    <sys:String x:Key="ProficiencyLevel_Intermediate">Intermediate</sys:String>
+    <sys:String x:Key="ProficiencyLevel_Advanced">Advanced</sys:String>
+    <sys:String x:Key="ProficiencyLevel_Expert">Expert</sys:String>
+
+</ResourceDictionary>

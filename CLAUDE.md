@@ -127,6 +127,17 @@ Two AI services, both fully implemented:
 - Prompts in `QuestionGeneratorService/QuestionGeneratorPrompts.cs`. Response deserialized into `ClarifyingQuestionRaw` → `ClarifyingQuestionDto`.
 - On failure, logs and returns empty list (never throws, except `OperationCanceledException`).
 
+### WPF — Localization
+
+Supported languages: **Russian** (default), **English**, **Ukrainian**.
+
+- Dictionaries live in `JobSearch.WPF/Localization/`: `ru.xaml`, `en.xaml`, `uk.xaml`. Each contains `<sys:String x:Key="...">` entries.
+- `App.xaml` includes `Localization/ru.xaml` as the design-time default (XAML designer sees Russian strings).
+- `App.OnStartup` calls `LocalizationManager.ApplyCurrentCulture()` before any window is created. It detects `CultureInfo.CurrentUICulture.TwoLetterISOLanguageName`, selects the matching dictionary, and replaces the merged entry. Falls back to Russian for unsupported cultures.
+- **XAML**: use `{DynamicResource KeyName}` for all user-visible text on `FrameworkElement` properties (`Text`, `Content`, `ToolTip`, `Title`). Exception: `DataGridColumn.Header` is not a `FrameworkElement` — use `{StaticResource KeyName}` there (safe because the dictionary is applied before any window is instantiated).
+- **Code-behind / ViewModels**: use `LocalizationManager.Get("KeyName")` (returns the key string as fallback if not found). For format strings with `{0}` placeholders use `string.Format(LocalizationManager.Get("Key"), arg)`.
+- **New strings**: add the key to all three `.xaml` dictionaries. Never hardcode user-visible Russian (or any other language) strings in XAML or C# files.
+
 ### WPF — DI and MVVM
 
 DI is fully wired in `App.xaml.cs` via `Host.CreateDefaultBuilder()`. `App.OnStartup` builds the host, calls all `Add*Services()` extension methods, and resolves `MainWindow` from DI.

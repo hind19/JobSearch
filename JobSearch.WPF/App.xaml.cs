@@ -4,6 +4,7 @@ using JobSearch.Business;
 using JobSearch.Email;
 using JobSearch.Persistence;
 using JobSearch.Scraping;
+using JobSearch.WPF.Localization;
 using JobSearch.WPF.ViewModels;
 using JobSearch.WPF.Views;
 using Microsoft.Extensions.Configuration;
@@ -20,6 +21,8 @@ public partial class App : System.Windows.Application
     protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+
+        LocalizationManager.ApplyCurrentCulture();
 
         // Prevent WPF from shutting down when the login window closes (zero open windows).
         // We call Shutdown() explicitly: on cancel, and when the main window closes.

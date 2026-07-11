@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using JobSearch.Application.Abstractions.Interfaces;
+using JobSearch.WPF.Localization;
 using Microsoft.Extensions.Configuration;
 
 namespace JobSearch.WPF.ViewModels;
@@ -31,9 +32,17 @@ public partial class LoginViewModel : ObservableObject
 
     public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
 
-    public string FormTitle => IsNewUser ? "Новый пользователь" : "Вход в систему";
-    public string LoginButtonText => IsNewUser ? "Создать профиль" : "Войти";
-    public string NewUserButtonText => IsNewUser ? "← Назад" : "Новый пользователь";
+    public string FormTitle => IsNewUser
+        ? LocalizationManager.Get("Login_FormTitle_New")
+        : LocalizationManager.Get("Login_FormTitle_Existing");
+
+    public string LoginButtonText => IsNewUser
+        ? LocalizationManager.Get("Login_Button_CreateProfile")
+        : LocalizationManager.Get("Login_Button_SignIn");
+
+    public string NewUserButtonText => IsNewUser
+        ? LocalizationManager.Get("Common_Back")
+        : LocalizationManager.Get("Login_Button_NewUser");
 
     public Guid? LoggedInUserId { get; private set; }
 
@@ -86,12 +95,12 @@ public partial class LoginViewModel : ObservableObject
             }
             else
             {
-                ErrorMessage = "Пользователь с таким email не найден.";
+                ErrorMessage = LocalizationManager.Get("Login_Error_NotFound");
             }
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Ошибка входа: {ex.Message}";
+            ErrorMessage = string.Format(LocalizationManager.Get("Login_Error_Prefix"), ex.Message);
         }
     }
 

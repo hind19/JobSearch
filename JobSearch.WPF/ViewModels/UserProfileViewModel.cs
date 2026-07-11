@@ -4,6 +4,7 @@ using JobSearch.Application.Abstractions.DTOs;
 using JobSearch.Application.Abstractions.Enums;
 using JobSearch.Application.Abstractions.Interfaces;
 using JobSearch.WPF.Dialogs;
+using JobSearch.WPF.Localization;
 using JobSearch.WPF.Models;
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
@@ -26,7 +27,13 @@ public partial class UserProfileViewModel : ObservableObject
     private Guid? _currentUserId;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CvFileDisplayName))]
     private string _cvFileName = string.Empty;
+
+    public string CvFileDisplayName =>
+        string.IsNullOrEmpty(CvFileName)
+            ? LocalizationManager.Get("UserProfile_NoFile")
+            : CvFileName;
 
     [ObservableProperty]
     private string _cvFileInfo = string.Empty;
@@ -72,11 +79,11 @@ public partial class UserProfileViewModel : ObservableObject
 
                 FileInfo fileInfo = new FileInfo(dialog.FileName);
                 int fileSizeInKB = (int)(fileInfo.Length / (1024));
-                CvFileInfo = $"Загружено {fileSizeInKB} kB ";
+                CvFileInfo = string.Format(LocalizationManager.Get("UserProfile_FileSizeInfo"), fileSizeInKB);
             }
             catch (Exception ex)
             {
-                _dialogService.ShowError($"Error reading file: {ex.Message}");
+                _dialogService.ShowError(string.Format(LocalizationManager.Get("Error_ReadFile"), ex.Message));
             }
         }
     }
@@ -95,7 +102,7 @@ public partial class UserProfileViewModel : ObservableObject
 
             if (!result.IsSuccess)
             {
-                _dialogService.ShowError(result.ErrorMessage ?? "CV analysis failed.");
+                _dialogService.ShowError(result.ErrorMessage ?? LocalizationManager.Get("Error_CvAnalysisFailed"));
                 return;
             }
 
@@ -164,8 +171,8 @@ public partial class UserProfileViewModel : ObservableObject
                     if (existingId.HasValue)
                     {
                         bool overwrite = _dialogService.ShowConfirmation(
-                            $"Пользователь с email «{candidateEmail}» уже существует. Перезаписать профиль?",
-                            "Профиль уже существует");
+                            string.Format(LocalizationManager.Get("UserProfile_EmailExists_Message"), candidateEmail),
+                            LocalizationManager.Get("UserProfile_EmailExists_Title"));
                         if (!overwrite)
                             return;
 
@@ -220,11 +227,11 @@ public partial class UserProfileViewModel : ObservableObject
             
             await _userProfileService.SaveProfileAsync(userId, result, answers, CancellationToken.None);
 
-            _dialogService.ShowInfo("Профиль успешно сохранён.");
+            _dialogService.ShowInfo(LocalizationManager.Get("UserProfile_SaveSuccess"));
         }
         catch (Exception ex)
         {
-            _dialogService.ShowError($"Не удалось сохранить профиль: {ex.Message}");
+            _dialogService.ShowError(string.Format(LocalizationManager.Get("UserProfile_SaveError"), ex.Message));
         }
         finally
         {

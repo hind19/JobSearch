@@ -1,0 +1,76 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- Common -->
+    <sys:String x:Key="Common_Back">← Назад</sys:String>
+    <sys:String x:Key="Common_Open">Открыть</sys:String>
+    <sys:String x:Key="Common_Cancel">Отмена</sys:String>
+
+    <!-- Home -->
+    <sys:String x:Key="Home_Title">Что сделаем сегодня?</sys:String>
+    <sys:String x:Key="Home_Subtitle">Выберите раздел для работы</sys:String>
+    <sys:String x:Key="Home_CvCard_Title">Анализ CV</sys:String>
+    <sys:String x:Key="Home_CvCard_Description">Загрузите резюме — Claude извлечёт навыки и составит профиль для поиска вакансий</sys:String>
+    <sys:String x:Key="Home_JobSitesCard_Title">Сайты поиска</sys:String>
+    <sys:String x:Key="Home_JobSitesCard_Description">Настройте сайты с вакансиями — Worker будет ежедневно проверять первую страницу результатов</sys:String>
+
+    <!-- UserProfile -->
+    <sys:String x:Key="UserProfile_Section_Resume">Резюме</sys:String>
+    <sys:String x:Key="UserProfile_NoFile">Файл не выбран</sys:String>
+    <sys:String x:Key="UserProfile_BrowseCv">⬆  Открыть</sys:String>
+    <sys:String x:Key="UserProfile_AnalyzeCv">▶  Анализировать</sys:String>
+    <sys:String x:Key="UserProfile_Analyzing">Выполняется анализ CV...</sys:String>
+    <sys:String x:Key="UserProfile_Section_Skills">Навыки</sys:String>
+    <sys:String x:Key="UserProfile_SkillBadge_FromCv">из CV</sys:String>
+    <sys:String x:Key="UserProfile_SkillBadge_Manual">добавлено вручную</sys:String>
+    <sys:String x:Key="UserProfile_Col_Source">Источник</sys:String>
+    <sys:String x:Key="UserProfile_Col_Skill">Навык</sys:String>
+    <sys:String x:Key="UserProfile_Col_Level">Уровень</sys:String>
+    <sys:String x:Key="UserProfile_Col_Experience">Опыт, лет</sys:String>
+    <sys:String x:Key="UserProfile_DeleteTooltip">Удалить</sys:String>
+    <sys:String x:Key="UserProfile_AddSkill">+ Добавить навык</sys:String>
+    <sys:String x:Key="UserProfile_Section_Questions">Уточняющие вопросы</sys:String>
+    <sys:String x:Key="UserProfile_RangeFrom">от</sys:String>
+    <sys:String x:Key="UserProfile_RangeTo">до</sys:String>
+    <sys:String x:Key="UserProfile_SaveProfile">✓  Сохранить профиль</sys:String>
+    <sys:String x:Key="UserProfile_FileSizeInfo">Загружено {0} kB</sys:String>
+    <sys:String x:Key="UserProfile_EmailExists_Message">Пользователь с email «{0}» уже существует. Перезаписать профиль?</sys:String>
+    <sys:String x:Key="UserProfile_EmailExists_Title">Профиль уже существует</sys:String>
+    <sys:String x:Key="UserProfile_SaveSuccess">Профиль успешно сохранён.</sys:String>
+    <sys:String x:Key="UserProfile_SaveError">Не удалось сохранить профиль: {0}</sys:String>
+
+    <!-- JobSites -->
+    <sys:String x:Key="JobSites_Placeholder">Сайты поиска — в разработке</sys:String>
+
+    <!-- Login -->
+    <sys:String x:Key="Login_WindowTitle">JobSearch — Вход</sys:String>
+    <sys:String x:Key="Login_Email">Email</sys:String>
+    <sys:String x:Key="Login_Password">Пароль</sys:String>
+    <sys:String x:Key="Login_ConfirmPassword">Подтвердите пароль</sys:String>
+    <sys:String x:Key="Login_FormTitle_Existing">Вход в систему</sys:String>
+    <sys:String x:Key="Login_FormTitle_New">Новый пользователь</sys:String>
+    <sys:String x:Key="Login_Button_SignIn">Войти</sys:String>
+    <sys:String x:Key="Login_Button_CreateProfile">Создать профиль</sys:String>
+    <sys:String x:Key="Login_Button_NewUser">Новый пользователь</sys:String>
+    <sys:String x:Key="Login_Error_NotFound">Пользователь с таким email не найден.</sys:String>
+    <sys:String x:Key="Login_Error_Prefix">Ошибка входа: {0}</sys:String>
+
+    <!-- Dialogs -->
+    <sys:String x:Key="Dialog_Warning">Предупреждение</sys:String>
+    <sys:String x:Key="Dialog_Error">Ошибка</sys:String>
+    <sys:String x:Key="Dialog_Info">Информация</sys:String>
+    <sys:String x:Key="Dialog_Confirmation">Подтверждение</sys:String>
+
+    <!-- Error messages -->
+    <sys:String x:Key="Error_ReadFile">Ошибка чтения файла: {0}</sys:String>
+    <sys:String x:Key="Error_CvAnalysisFailed">Анализ CV завершился с ошибкой.</sys:String>
+
+    <!-- ProficiencyLevel enum -->
+    <sys:String x:Key="ProficiencyLevel_NotSpecified">—</sys:String>
+    <sys:String x:Key="ProficiencyLevel_Beginner">Начинающий</sys:String>
+    <sys:String x:Key="ProficiencyLevel_Intermediate">Средний</sys:String>
+    <sys:String x:Key="ProficiencyLevel_Advanced">Продвинутый</sys:String>
+    <sys:String x:Key="ProficiencyLevel_Expert">Эксперт</sys:String>
+
+</ResourceDictionary>

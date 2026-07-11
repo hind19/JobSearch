@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="JobSearch.WPF.Views.JobSitesView"
+<UserControl x:Class="JobSearch.WPF.Views.JobSitesView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
@@ -12,11 +12,11 @@
 
     <StackPanel VerticalAlignment="Center"
                 HorizontalAlignment="Center">
-        <TextBlock Text="Сайты поиска — в разработке"
+        <TextBlock Text="{DynamicResource JobSites_Placeholder}"
                    FontSize="16"
                    Foreground="#757575"
                    Margin="0,0,0,16" />
-        <Button Content="← Назад"
+        <Button Content="{DynamicResource Common_Back}"
                 Command="{Binding GoHomeCommand}"
                 Style="{StaticResource OutlineButtonStyle}"
                 Padding="22,10"

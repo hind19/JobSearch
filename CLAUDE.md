@@ -70,6 +70,35 @@ WPF ──────────── Business
     └─────────── Application.Abstractions
 ```
 
+### DTO conventions
+
+All DTOs (in `Application.Abstractions/DTOs/` and `Persistence.Abstractions/DTOs/`) must follow this pattern:
+
+- **Primary constructor** — declare all properties via primary constructor parameters; no explicit constructor body.
+- **No setters** — all properties use `{ get; } = parameterName;`. No `set` or `init` accessors.
+
+```csharp
+// correct
+public class FooDto(Guid id, string name)
+{
+    public Guid Id { get; } = id;
+    public string Name { get; } = name;
+}
+
+// wrong — explicit constructor body
+public class FooDto
+{
+    public Guid Id { get; }
+    public FooDto(Guid id) { Id = id; }
+}
+
+// wrong — init setter
+public class FooDto
+{
+    public Guid Id { get; init; }
+}
+```
+
 ### Layers
 
 - **`JobSearch.Application.Abstractions`** — Application-layer interfaces: `IJobService`, `IUserProfileService`, `IJobMatchService`, `IEmailSender`, `ICvParser`, `IQuestionGenerator`. DTOs split in two: `CvAnalysisResult`, `CandidateInfo`, `SkillDto`, `WorkExperienceDto` are **declared in the global namespace** (no `namespace` statement); `UserSkillDto` and other typed DTOs are under `JobSearch.Application.Abstractions.DTOs`. `ProficiencyLevel` and `AnswerType` enums live in `Enums/`. Note: `CvAnalysisResult.Skills` is `List<UserSkillDto>` (user-scoped, has `UserId`); `SkillDto` (no user context) is kept for internal AI mapping only. No project dependencies.

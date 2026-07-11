@@ -1,37 +1,23 @@
-﻿// DTOs/UserJobMatchPersistenceDto.cs
 namespace JobSearch.Persistence.Abstractions.DTOs;
 
-public class UserJobMatchPersistenceDto
+public class UserJobMatchPersistenceDto(
+    Guid id,
+    Guid userId,
+    Guid jobId,
+    decimal relevanceScore,
+    string? relevanceReason,
+    bool wasNotified,
+    DateTime? notifiedAt,
+    DateTime foundInRunAt,
+    JobPersistenceDto job)
 {
-    public Guid Id { get; }
-    public Guid UserId { get; }
-    public Guid JobId { get; }
-    public decimal RelevanceScore { get; }
-    public string? RelevanceReason { get; }
-    public bool WasNotified { get; }
-    public DateTime? NotifiedAt { get; }
-    public DateTime FoundInRunAt { get; }
-    public JobPersistenceDto Job { get; }
-
-    public UserJobMatchPersistenceDto(
-        Guid id,
-        Guid userId,
-        Guid jobId,
-        decimal relevanceScore,
-        string? relevanceReason,
-        bool wasNotified,
-        DateTime? notifiedAt,
-        DateTime foundInRunAt,
-        JobPersistenceDto job)
-    {
-        Id = id;
-        UserId = userId;
-        JobId = jobId;
-        RelevanceScore = relevanceScore;
-        RelevanceReason = relevanceReason;
-        WasNotified = wasNotified;
-        NotifiedAt = notifiedAt;
-        FoundInRunAt = foundInRunAt;
-        Job = job;
-    }
+    public Guid Id { get; } = id;
+    public Guid UserId { get; } = userId;
+    public Guid JobId { get; } = jobId;
+    public decimal RelevanceScore { get; } = relevanceScore;
+    public string? RelevanceReason { get; } = relevanceReason;
+    public bool WasNotified { get; } = wasNotified;
+    public DateTime? NotifiedAt { get; } = notifiedAt;
+    public DateTime FoundInRunAt { get; } = foundInRunAt;
+    public JobPersistenceDto Job { get; } = job;
 }

@@ -1,25 +1,15 @@
-﻿// DTOs/JobSitePersistenceDto.cs
 namespace JobSearch.Persistence.Abstractions.DTOs;
 
-public class JobSitePersistenceDto
+public class JobSitePersistenceDto(
+    Guid id,
+    string name,
+    string baseUrl,
+    bool isActive,
+    string scrapeConfig)
 {
-    public Guid Id { get; }
-    public string Name { get; }
-    public string BaseUrl { get; }
-    public bool IsActive { get; }
-    public string ScrapeConfig { get; }
-
-    public JobSitePersistenceDto(
-        Guid id,
-        string name,
-        string baseUrl,
-        bool isActive,
-        string scrapeConfig)
-    {
-        Id = id;
-        Name = name;
-        BaseUrl = baseUrl;
-        IsActive = isActive;
-        ScrapeConfig = scrapeConfig;
-    }
+    public Guid Id { get; } = id;
+    public string Name { get; } = name;
+    public string BaseUrl { get; } = baseUrl;
+    public bool IsActive { get; } = isActive;
+    public string ScrapeConfig { get; } = scrapeConfig;
 }

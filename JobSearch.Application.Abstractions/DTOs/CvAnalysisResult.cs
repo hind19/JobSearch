@@ -1,39 +1,26 @@
-﻿using JobSearch.Application.Abstractions.DTOs;
+using JobSearch.Application.Abstractions.DTOs;
 using JobSearch.Application.Abstractions.Enums;
 
-public class CvAnalysisResult
+public class CvAnalysisResult(
+    bool isSuccess,
+    string? errorMessage,
+    CandidateInfo candidate,
+    List<UserSkillDto> skills,
+    List<WorkExperienceDto> workExperience,
+    List<string> detectedLanguages,
+    List<string> desiredRoles,
+    string claudeReadyProfile,
+    List<ClarifyingQuestionDto> clarifyingQuestions)
 {
-    public bool IsSuccess { get; }
-    public string? ErrorMessage { get; }
-    public CandidateInfo Candidate { get; }
-    public List<UserSkillDto> Skills { get; }
-    public List<WorkExperienceDto> WorkExperience { get; }
-    public List<string> DetectedLanguages { get; }
-    public List<string> DesiredRoles { get; }
-    public string ClaudeReadyProfile { get; }
-    public List<ClarifyingQuestionDto> ClarifyingQuestions { get; }
-
-    public CvAnalysisResult(
-        bool isSuccess,
-        string? errorMessage,
-        CandidateInfo candidate,
-        List<UserSkillDto> skills,
-        List<WorkExperienceDto> workExperience,
-        List<string> detectedLanguages,
-        List<string> desiredRoles,
-        string claudeReadyProfile,
-        List<ClarifyingQuestionDto> clarifyingQuestions)
-    {
-        IsSuccess = isSuccess;
-        ErrorMessage = errorMessage;
-        Candidate = candidate;
-        Skills = skills;
-        WorkExperience = workExperience;
-        DetectedLanguages = detectedLanguages;
-        DesiredRoles = desiredRoles;
-        ClaudeReadyProfile = claudeReadyProfile;
-        ClarifyingQuestions = clarifyingQuestions;
-    }
+    public bool IsSuccess { get; } = isSuccess;
+    public string? ErrorMessage { get; } = errorMessage;
+    public CandidateInfo Candidate { get; } = candidate;
+    public List<UserSkillDto> Skills { get; } = skills;
+    public List<WorkExperienceDto> WorkExperience { get; } = workExperience;
+    public List<string> DetectedLanguages { get; } = detectedLanguages;
+    public List<string> DesiredRoles { get; } = desiredRoles;
+    public string ClaudeReadyProfile { get; } = claudeReadyProfile;
+    public List<ClarifyingQuestionDto> ClarifyingQuestions { get; } = clarifyingQuestions;
 
     public static CvAnalysisResult Failure(string errorMessage) =>
         new(
@@ -48,71 +35,56 @@ public class CvAnalysisResult
             clarifyingQuestions: []);
 
     public static CvAnalysisResult WithQuestions(
-    CvAnalysisResult source,
-    List<ClarifyingQuestionDto> questions) =>
-    new(
-        isSuccess: source.IsSuccess,
-        errorMessage: source.ErrorMessage,
-        candidate: source.Candidate,
-        skills: source.Skills,
-        workExperience: source.WorkExperience,
-        detectedLanguages: source.DetectedLanguages,
-        desiredRoles: source.DesiredRoles,
-        claudeReadyProfile: source.ClaudeReadyProfile,
-        clarifyingQuestions: questions
-    );
+        CvAnalysisResult source,
+        List<ClarifyingQuestionDto> questions) =>
+        new(
+            isSuccess: source.IsSuccess,
+            errorMessage: source.ErrorMessage,
+            candidate: source.Candidate,
+            skills: source.Skills,
+            workExperience: source.WorkExperience,
+            detectedLanguages: source.DetectedLanguages,
+            desiredRoles: source.DesiredRoles,
+            claudeReadyProfile: source.ClaudeReadyProfile,
+            clarifyingQuestions: questions);
 }
 
-public class CandidateInfo
+public class CandidateInfo(
+    string? fullName,
+    string? email,
+    string? phone,
+    string? location,
+    string? summary)
 {
-    public string? FullName { get; }
-    public string? Email { get; }
-    public string? Phone { get; }
-    public string? Location { get; }
-    public string? Summary { get; }
-
-    public CandidateInfo(
-        string? fullName,
-        string? email,
-        string? phone,
-        string? location,
-        string? summary)
-    {
-        FullName = fullName;
-        Email = email;
-        Phone = phone;
-        Location = location;
-        Summary = summary;
-    }
+    public string? FullName { get; } = fullName;
+    public string? Email { get; } = email;
+    public string? Phone { get; } = phone;
+    public string? Location { get; } = location;
+    public string? Summary { get; } = summary;
 }
 
-public class SkillDto
+public class SkillDto(
+    string skillName = "",
+    ProficiencyLevel proficiencyLevel = default,
+    int? yearsOfExperience = null,
+    bool extractedByClaude = true)
 {
-    public string SkillName { get; init; } = string.Empty;
-    public ProficiencyLevel ProficiencyLevel { get; init; }
-    public int? YearsOfExperience { get; init; }
-    public bool ExtractedByClaude { get; init; } = true;
+    public string SkillName { get; } = skillName;
+    public ProficiencyLevel ProficiencyLevel { get; } = proficiencyLevel;
+    public int? YearsOfExperience { get; } = yearsOfExperience;
+    public bool ExtractedByClaude { get; } = extractedByClaude;
 }
 
-public class WorkExperienceDto
+public class WorkExperienceDto(
+    string company,
+    string role,
+    DateOnly? startDate,
+    DateOnly? endDate,
+    string? description)
 {
-    public string Company { get; }
-    public string Role { get; }
-    public DateOnly? StartDate { get; }
-    public DateOnly? EndDate { get; }
-    public string? Description { get; }
-
-    public WorkExperienceDto(
-        string company,
-        string role,
-        DateOnly? startDate,
-        DateOnly? endDate,
-        string? description)
-    {
-        Company = company;
-        Role = role;
-        StartDate = startDate;
-        EndDate = endDate;
-        Description = description;
-    }
+    public string Company { get; } = company;
+    public string Role { get; } = role;
+    public DateOnly? StartDate { get; } = startDate;
+    public DateOnly? EndDate { get; } = endDate;
+    public string? Description { get; } = description;
 }

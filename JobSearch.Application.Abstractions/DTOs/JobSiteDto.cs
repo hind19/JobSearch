@@ -1,24 +1,15 @@
-﻿namespace JobSearch.Application.Abstractions.DTOs;
+namespace JobSearch.Application.Abstractions.DTOs;
 
-public class JobSiteDto
+public class JobSiteDto(
+    Guid id,
+    string name,
+    string baseUrl,
+    bool isActive,
+    string scrapeConfig)
 {
-    public Guid Id { get; }
-    public string Name { get; }
-    public string BaseUrl { get; }
-    public bool IsActive { get; }
-    public string ScrapeConfig { get; }
-
-    public JobSiteDto(
-        Guid id,
-        string name,
-        string baseUrl,
-        bool isActive,
-        string scrapeConfig)
-    {
-        Id = id;
-        Name = name;
-        BaseUrl = baseUrl;
-        IsActive = isActive;
-        ScrapeConfig = scrapeConfig;
-    }
+    public Guid Id { get; } = id;
+    public string Name { get; } = name;
+    public string BaseUrl { get; } = baseUrl;
+    public bool IsActive { get; } = isActive;
+    public string ScrapeConfig { get; } = scrapeConfig;
 }

@@ -1,0 +1,18 @@
+﻿// JobSearch.WPF/ViewModels/HomeViewModel.cs
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+
+namespace JobSearch.WPF.ViewModels;
+
+public partial class HomeViewModel : ObservableObject
+{
+    // устанавливается из MainViewModel после создания
+    public Action? NavigateToProfile { get; set; }
+    public Action? NavigateToJobSites { get; set; }
+
+    [RelayCommand]
+    private void OpenProfile() => NavigateToProfile?.Invoke();
+
+    [RelayCommand]
+    private void OpenJobSites() => NavigateToJobSites?.Invoke();
+}

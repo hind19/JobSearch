@@ -44,6 +44,8 @@ public partial class UserProfileViewModel : ObservableObject
 
     public IEnumerable<ProficiencyLevel> ProficiencyLevels { get; } = Enum.GetValues<ProficiencyLevel>();
 
+    public Action? NavigateHome { get; set; }
+
     public UserProfileViewModel(IUserProfileService userProfileService, IDialogService dialogService)
     {
         _userProfileService = userProfileService;
@@ -231,10 +233,7 @@ public partial class UserProfileViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void Cancel()
-    {
-        // stub: navigate to previous view or close window
-    }
+    private void Cancel() => NavigateHome?.Invoke();
 
     public async Task LoadUserProfileAsync(Guid userId, CancellationToken ct = default)
     {

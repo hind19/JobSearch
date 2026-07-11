@@ -5,9 +5,9 @@ namespace JobSearch.WPF;
 
 public partial class MainWindow : Window
 {
-    public UserProfileViewModel ViewModel { get; }
+    public MainViewModel ViewModel { get; }
 
-    public MainWindow(UserProfileViewModel viewModel)
+    public MainWindow(MainViewModel viewModel)
     {
         InitializeComponent();
         ViewModel = viewModel;

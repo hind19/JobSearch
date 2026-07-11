@@ -10,8 +10,13 @@ public static class WpfServiceExtensions
         this IServiceCollection services)
     {
         services.AddSingleton<IDialogService, DialogService>();
+
         services.AddTransient<MainWindow>();
+        services.AddTransient<MainViewModel>();
+        services.AddTransient<HomeViewModel>();
         services.AddTransient<UserProfileViewModel>();
+        services.AddTransient<JobSitesViewModel>();
+
         services.AddTransient<LoginWindow>();
         services.AddTransient<LoginViewModel>();
 

@@ -71,7 +71,8 @@ public partial class App : System.Windows.Application
         var mainWindow = _host.Services.GetRequiredService<MainWindow>();
 
         if (loginWindow.ViewModel.LoggedInUserId.HasValue)
-            await mainWindow.ViewModel.LoadUserProfileAsync(loginWindow.ViewModel.LoggedInUserId.Value);
+            await mainWindow.ViewModel.InitializeAsync(
+                loginWindow.ViewModel.LoggedInUserId.Value);
 
         mainWindow.Closed += (_, _) => Shutdown();
         mainWindow.Show();

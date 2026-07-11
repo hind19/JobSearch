@@ -1,0 +1,26 @@
+﻿<UserControl x:Class="JobSearch.WPF.Views.JobSitesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <StackPanel VerticalAlignment="Center"
+                HorizontalAlignment="Center">
+        <TextBlock Text="Сайты поиска — в разработке"
+                   FontSize="16"
+                   Foreground="#757575"
+                   Margin="0,0,0,16" />
+        <Button Content="← Назад"
+                Command="{Binding GoHomeCommand}"
+                Style="{StaticResource OutlineButtonStyle}"
+                Padding="22,10"
+                HorizontalAlignment="Center" />
+    </StackPanel>
+
+</UserControl>

@@ -14,6 +14,18 @@ public class JobSiteRepository : IJobSiteRepository
         _context = context;
     }
 
+    public async Task<List<JobSitePersistenceDto>> GetAllAsync(
+        CancellationToken ct = default)
+    {
+        var entities = await _context.JobSites
+            .AsNoTracking()
+            .ToListAsync(ct);
+
+        return entities
+            .Select(PersistenceMapper.ToDto)
+            .ToList();
+    }
+
     public async Task<List<JobSitePersistenceDto>> GetAllActiveAsync(
         CancellationToken ct = default)
     {
@@ -83,6 +95,19 @@ public class JobSiteRepository : IJobSiteRepository
 
         entity.IsActive = isActive;
 
+        await _context.SaveChangesAsync(ct);
+    }
+
+    public async Task DeleteAsync(
+    Guid id,
+    CancellationToken ct = default)
+    {
+        var entity = await _context.JobSites
+            .FirstOrDefaultAsync(s => s.Id == id, ct)
+                ?? throw new InvalidOperationException(
+                    $"JobSite {id} not found.");
+
+        _context.JobSites.Remove(entity);
         await _context.SaveChangesAsync(ct);
     }
 }

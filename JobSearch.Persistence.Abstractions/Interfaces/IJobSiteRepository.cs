@@ -5,6 +5,9 @@ namespace JobSearch.Persistence.Abstractions;
 
 public interface IJobSiteRepository
 {
+    Task<List<JobSitePersistenceDto>> GetAllAsync(
+        CancellationToken ct = default);
+
     Task<List<JobSitePersistenceDto>> GetAllActiveAsync(
         CancellationToken ct = default);
 
@@ -24,4 +27,6 @@ public interface IJobSiteRepository
         Guid id,
         bool isActive,
         CancellationToken ct = default);
+
+    Task DeleteAsync(Guid id, CancellationToken ct = default);
 }

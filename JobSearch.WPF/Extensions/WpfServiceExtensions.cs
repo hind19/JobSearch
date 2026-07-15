@@ -19,6 +19,7 @@ public static class WpfServiceExtensions
 
         services.AddTransient<LoginWindow>();
         services.AddTransient<LoginViewModel>();
+        services.AddTransient<JobSitesViewModel>();
 
         return services;
     }

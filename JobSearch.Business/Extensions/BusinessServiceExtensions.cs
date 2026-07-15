@@ -13,6 +13,7 @@ public static class BusinessServiceExtensions
         services.AddScoped<IUserProfileService, UserProfileService>();
         services.AddScoped<IJobService, JobService>();
         services.AddScoped<IJobMatchService, JobMatchService>();
+        services.AddScoped<IJobSiteService, JobSiteService>();
 
         return services;
     }

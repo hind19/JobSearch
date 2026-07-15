@@ -85,23 +85,26 @@ internal static class BusinessMapper
     // ─── JobSite ─────────────────────────────────────────────
 
     internal static JobSiteDto ToDto(JobSitePersistenceDto dto) =>
-        new(
-            id: dto.Id,
-            name: dto.Name,
-            baseUrl: dto.BaseUrl,
-            isActive: dto.IsActive,
-            scrapeConfig: dto.ScrapeConfig
-        );
+     new(
+         id: dto.Id,
+         name: dto.Name,
+         baseUrl: dto.BaseUrl,
+         isActive: dto.IsActive,
+         // TODO: рассмотреть вопрос с изменением БД под объект вместо строки
+         //       с добавлением новой таблицы ScrapeConfigs (Id, JobSiteId, поля конфига)
+         scrapeConfig: ScrapeConfigMapper.FromJson(dto.ScrapeConfig)
+     );
 
-    internal static JobSitePersistenceDto ToPersistenceDto(
-        JobSiteDto dto) =>
-        new(
-            id: dto.Id,
-            name: dto.Name,
-            baseUrl: dto.BaseUrl,
-            isActive: dto.IsActive,
-            scrapeConfig: dto.ScrapeConfig
-        );
+    internal static JobSitePersistenceDto ToPersistenceDto(JobSiteDto dto) =>
+    new(
+        id: dto.Id,
+        name: dto.Name,
+        baseUrl: dto.BaseUrl,
+        isActive: dto.IsActive,
+        // TODO: рассмотреть вопрос с изменением БД под объект вместо строки
+        //       с добавлением новой таблицы ScrapeConfigs (Id, JobSiteId, поля конфига)
+        scrapeConfig: ScrapeConfigMapper.ToJson(dto.ScrapeConfig)
+    );
 
     // ─── Job ─────────────────────────────────────────────────
 

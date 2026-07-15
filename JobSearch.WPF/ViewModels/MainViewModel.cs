@@ -35,6 +35,10 @@ public partial class MainViewModel : ObservableObject
     }
 
     private void NavigateToProfile() => CurrentViewModel = _userProfileViewModel;
-    private void NavigateToJobSites() => CurrentViewModel = _jobSitesViewModel;
+    private async void NavigateToJobSites()
+    {
+        CurrentViewModel = _jobSitesViewModel;
+        await _jobSitesViewModel.LoadAsync();
+    }
     private void NavigateToHome() => CurrentViewModel = _homeViewModel;
 }

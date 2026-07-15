@@ -26,6 +26,7 @@ public static class AiServiceExtensions
         services.AddScoped<ICvParser, CvParser>();
         services.AddScoped<IQuestionGenerator, QuestionGenerator>();
         services.AddScoped<IProfileEnricher, ProfileEnricher>();
+        services.AddScoped<ISelectorDetector, SelectorDetector>();
 
         return services;
     }

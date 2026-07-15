@@ -1,3 +1,4 @@
+// JobSearch.Persistence.Abstractions/DTOs/JobSitePersistenceDto.cs
 namespace JobSearch.Persistence.Abstractions.DTOs;
 
 public class JobSitePersistenceDto(

@@ -7,6 +7,9 @@ public class User
     public string Email { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
+    // ADR-0002: bumped by UserRepository on every Create/Update; used to
+    // resolve "most recently modified user" for the headless Worker.
+    public DateTime UpdatedAt { get; set; }
     public bool IsActive { get; set; }
 
     public UserProfile? Profile { get; set; }

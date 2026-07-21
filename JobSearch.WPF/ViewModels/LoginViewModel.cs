@@ -76,9 +76,10 @@ public partial class LoginViewModel : ObservableObject
             }
             catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] FindUserByEmailAsync threw: {ex}");
                 Console.WriteLine(ex.Message);
             }
-
+            System.Diagnostics.Debug.WriteLine($"[DEBUG] Login bypass resolved LoggedInUserId={LoggedInUserId}, Email='{Email}'");
             RequestClose?.Invoke(true);
             return;
         }
@@ -100,6 +101,7 @@ public partial class LoginViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"[DEBUG] FindUserByEmailAsync threw: {ex}");
             ErrorMessage = string.Format(LocalizationManager.Get("Login_Error_Prefix"), ex.Message);
         }
     }

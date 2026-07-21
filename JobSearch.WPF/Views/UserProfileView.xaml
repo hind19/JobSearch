@@ -112,6 +112,45 @@
                     </StackPanel>
                 </Border>
 
+                <!-- ═══════════════ Saved profile preferences (read-only display) -->
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="{DynamicResource UserProfile_Section_Preferences}" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,16"/>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource UserProfile_Label_DesiredRoles}"
+                                       Foreground="#757575" Margin="0,0,16,10"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DesiredRoles}"
+                                       TextWrapping="Wrap" Margin="0,0,0,10"/>
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource UserProfile_Label_Salary}"
+                                       Foreground="#757575" Margin="0,0,16,10"/>
+                            <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Margin="0,0,0,10">
+                                <TextBlock Text="{Binding DesiredSalaryMin}"/>
+                                <TextBlock Text=" — "/>
+                                <TextBlock Text="{Binding DesiredSalaryMax}"/>
+                                <TextBlock Text=" "/>
+                                <TextBlock Text="{Binding SalaryCurrency}"/>
+                            </StackPanel>
+
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource UserProfile_Label_Location}"
+                                       Foreground="#757575" Margin="0,0,16,0"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding LocationPreference}"
+                                       TextWrapping="Wrap"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
                 <!-- ═══════════════ Skills section -->
                 <Border Style="{StaticResource CardStyle}">
                     <StackPanel>

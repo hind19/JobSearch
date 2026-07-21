@@ -17,6 +17,7 @@
 
     <!-- UserProfile -->
     <sys:String x:Key="UserProfile_Section_Resume">Resume</sys:String>
+    <sys:String x:Key="UserProfile_CvParsedAt">Resume analyzed on {0:MM/dd/yyyy}</sys:String>
     <sys:String x:Key="UserProfile_NoFile">No file selected</sys:String>
     <sys:String x:Key="UserProfile_BrowseCv">⬆  Browse</sys:String>
     <sys:String x:Key="UserProfile_AnalyzeCv">▶  Analyze</sys:String>
@@ -39,6 +40,10 @@
     <sys:String x:Key="UserProfile_EmailExists_Title">Profile already exists</sys:String>
     <sys:String x:Key="UserProfile_SaveSuccess">Profile saved successfully.</sys:String>
     <sys:String x:Key="UserProfile_SaveError">Failed to save profile: {0}</sys:String>
+    <sys:String x:Key="UserProfile_Section_Preferences">Preferences</sys:String>
+    <sys:String x:Key="UserProfile_Label_DesiredRoles">Desired roles</sys:String>
+    <sys:String x:Key="UserProfile_Label_Salary">Salary</sys:String>
+    <sys:String x:Key="UserProfile_Label_Location">Location</sys:String>
 
     <!-- JobSites -->
     <sys:String x:Key="JobSites_Placeholder">Job sites — coming soon</sys:String>

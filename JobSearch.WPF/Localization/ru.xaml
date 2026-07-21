@@ -17,6 +17,7 @@
 
     <!-- UserProfile -->
     <sys:String x:Key="UserProfile_Section_Resume">Резюме</sys:String>
+    <sys:String x:Key="UserProfile_CvParsedAt">Резюме проанализировано {0:dd.MM.yyyy}</sys:String>
     <sys:String x:Key="UserProfile_NoFile">Файл не выбран</sys:String>
     <sys:String x:Key="UserProfile_BrowseCv">⬆  Открыть</sys:String>
     <sys:String x:Key="UserProfile_AnalyzeCv">▶  Анализировать</sys:String>
@@ -39,6 +40,10 @@
     <sys:String x:Key="UserProfile_EmailExists_Title">Профиль уже существует</sys:String>
     <sys:String x:Key="UserProfile_SaveSuccess">Профиль успешно сохранён.</sys:String>
     <sys:String x:Key="UserProfile_SaveError">Не удалось сохранить профиль: {0}</sys:String>
+    <sys:String x:Key="UserProfile_Section_Preferences">Предпочтения</sys:String>
+    <sys:String x:Key="UserProfile_Label_DesiredRoles">Желаемые роли</sys:String>
+    <sys:String x:Key="UserProfile_Label_Salary">Зарплата</sys:String>
+    <sys:String x:Key="UserProfile_Label_Location">Локация</sys:String>
 
     <!-- JobSites -->
     <sys:String x:Key="JobSites_Placeholder">Сайты поиска — в разработке</sys:String>

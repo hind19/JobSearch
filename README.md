@@ -49,9 +49,30 @@ dotnet user-secrets set "AnthropicSettings:ApiKey" "<your-key>" --project JobSea
 dotnet run --project JobSearch.Worker
 ```
 
-## Database migrations
+## Database location
 
-```powershell
-dotnet ef migrations add <MigrationName> --project JobSearch.Persistence --startup-project JobSearch.Worker
-dotnet ef database update --project JobSearch.Persistence --startup-project JobSearch.Worker
+The SQLite database is shared between `JobSearch.WPF` and `JobSearch.Worker` —
+both hosts must resolve to the same physical file, so its path is absolute
+rather than relative to either project's bin directory:
+
 ```
+%ProgramData%\JobSearch\Database\jobsearch.db
+```
+
+On a default Windows install this is `C:\ProgramData\JobSearch\Database\jobsearch.db`.
+The containing directory is created automatically on first run if it doesn't
+exist yet (see `PersistenceServiceExtensions.AddPersistence`).
+
+The path is configured via `ConnectionStrings:DefaultConnection` in each
+project's `appsettings.json` and supports `%VARIABLE%`-style environment
+variable expansion:
+
+```json
+"ConnectionStrings": {
+  "DefaultConnection": "Data Source=%ProgramData%\\JobSearch\\Database\\jobsearch.db"
+}
+```
+
+No schema migrations are run against it at startup — the database is
+created via `AppDbContext.Database.EnsureCreatedAsync()`. See
+`Scripts/CreateDatabase.sql` for the reference schema.

@@ -63,6 +63,29 @@ public class UserProfileService : IUserProfileService
         return user?.Id;
     }
 
+    public async Task<Guid?> GetCurrentUserIdAsync(
+        CancellationToken ct = default)
+    {
+        var user = await _userRepository.GetMostRecentlyModifiedAsync(ct);
+        return user?.Id;
+    }
+
+    public async Task<UserProfileDto?> GetProfileAsync(
+        Guid userId,
+        CancellationToken ct = default)
+    {
+        var dto = await _userProfileRepository.GetByUserIdAsync(userId, ct);
+        return dto is null ? null : BusinessMapper.ToDto(dto);
+    }
+
+    public async Task<UserDto?> GetUserAsync(
+        Guid userId,
+        CancellationToken ct = default)
+    {
+        var dto = await _userRepository.GetByIdAsync(userId, ct);
+        return dto is null ? null : BusinessMapper.ToDto(dto);
+    }
+
     public async Task SaveProfileAsync(
      Guid userId,
      CvAnalysisResult result,
@@ -78,16 +101,26 @@ public class UserProfileService : IUserProfileService
             q => q.AnswerType == Application.Abstractions.Enums.AnswerType.NumericRange
               && q.RangeFrom is not null);
 
-        // 3. Создаём пользователя
+        // 3. Создаём или обновляем пользователя
         // TODO: заменить на реальный Email/Name когда появится UserContext
+        // ADR-0002: create vs update must be distinguished so CreatedAt is
+        // preserved and UpdatedAt is refreshed correctly by the repository
+        // on every save (was previously always CreateAsync, which failed
+        // on re-save due to the UQ_Users_Email / PK constraints).
+        var existingUser = await _userRepository.GetByIdAsync(userId, ct);
+
         var userDto = new UserPersistenceDto(
             id: userId,
-            email: result.Candidate.Email ?? $"{userId}@placeholder.local",
-            name: result.Candidate.FullName ?? "Unknown",
-            createdAt: DateTime.UtcNow,
+            email: result.Candidate.Email ?? existingUser?.Email
+                ?? $"{userId}@placeholder.local",
+            name: result.Candidate.FullName ?? existingUser?.Name ?? "Unknown",
+            createdAt: existingUser?.CreatedAt ?? DateTime.UtcNow,
             isActive: true);
 
-        await _userRepository.CreateAsync(userDto, ct);
+        if (existingUser is null)
+            await _userRepository.CreateAsync(userDto, ct);
+        else
+            await _userRepository.UpdateAsync(userDto, ct);
 
         // 4. Создаём профиль
         var profileDto = new UserProfilePersistenceDto(

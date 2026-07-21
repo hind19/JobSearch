@@ -56,8 +56,6 @@ public partial class App : System.Windows.Application
 
         await _host.StartAsync();
 
-        EnsureDatabaseDirectoryExists();
-
         await using var scope = _host.Services.CreateAsyncScope();
         var db = scope.ServiceProvider
             .GetRequiredService<AppDbContext>();
@@ -79,27 +77,6 @@ public partial class App : System.Windows.Application
 
         mainWindow.Closed += (_, _) => Shutdown();
         mainWindow.Show();
-    }
-
-    private void EnsureDatabaseDirectoryExists()
-    {
-        var connectionString = _host.Services
-            .GetRequiredService<IConfiguration>()
-            .GetConnectionString("DefaultConnection");
-
-        if (connectionString is null) return;
-
-        var dataSource = connectionString
-            .Split(';', StringSplitOptions.RemoveEmptyEntries)
-            .Select(p => p.Trim())
-            .FirstOrDefault(p => p.StartsWith("Data Source=", StringComparison.OrdinalIgnoreCase))
-            ?["Data Source=".Length..];
-
-        if (string.IsNullOrWhiteSpace(dataSource) || Path.IsPathRooted(dataSource)) return;
-
-        var dir = Path.GetDirectoryName(Path.Combine(AppContext.BaseDirectory, dataSource));
-        if (dir is not null)
-            Directory.CreateDirectory(dir);
     }
 
     protected override async void OnExit(ExitEventArgs e)

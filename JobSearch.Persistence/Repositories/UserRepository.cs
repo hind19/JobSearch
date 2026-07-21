@@ -47,6 +47,10 @@ public class UserRepository : IUserRepository
     {
         var entity = PersistenceMapper.ToEntity(dto);
 
+        // ADR-0002: UpdatedAt is stamped by the repository, not passed
+        // through the DTO — write time is a persistence-layer concern.
+        entity.UpdatedAt = entity.CreatedAt;
+
         await _context.Users.AddAsync(entity, ct);
         await _context.SaveChangesAsync(ct);
 
@@ -65,6 +69,9 @@ public class UserRepository : IUserRepository
         entity.Email = dto.Email;
         entity.Name = dto.Name;
         entity.IsActive = dto.IsActive;
+        // ADR-0002: bump UpdatedAt on every write so Worker's
+        // "most recently modified user" resolution stays accurate.
+        entity.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync(ct);
 
@@ -76,4 +83,17 @@ public class UserRepository : IUserRepository
         CancellationToken ct = default) =>
         await _context.Users
             .AnyAsync(u => u.Id == id, ct);
+
+    public async Task<UserPersistenceDto?> GetMostRecentlyModifiedAsync(
+        CancellationToken ct = default)
+    {
+        var entity = await _context.Users
+            .AsNoTracking()
+            .OrderByDescending(u => u.UpdatedAt)
+            .FirstOrDefaultAsync(ct);
+
+        return entity is null
+            ? null
+            : PersistenceMapper.ToDto(entity);
+    }
 }

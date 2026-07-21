@@ -3,7 +3,11 @@ using JobSearch.Application.Abstractions.DTOs;
 
 namespace JobSearch.Application.Abstractions.Interfaces;
 
-public interface IJobSiteService
+// Full management surface — used by JobSearch.WPF's JobSitesViewModel
+// (list/create/edit/delete/activate/validate). JobSearch.Worker should
+// depend on IJobSiteQueryService instead (see that interface) rather than
+// on this one, per ISP.
+public interface IJobSiteService : IJobSiteQueryService
 {
     Task<List<JobSiteDto>> GetAllAsync(
         CancellationToken ct = default);

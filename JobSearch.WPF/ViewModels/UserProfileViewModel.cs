@@ -31,9 +31,33 @@ public partial class UserProfileViewModel : ObservableObject
     private string _cvFileName = string.Empty;
 
     public string CvFileDisplayName =>
-        string.IsNullOrEmpty(CvFileName)
-            ? LocalizationManager.Get("UserProfile_NoFile")
-            : CvFileName;
+        !string.IsNullOrEmpty(CvFileName)
+            ? CvFileName
+            : !string.IsNullOrEmpty(SavedCandidateName)
+                ? SavedCandidateName
+                : LocalizationManager.Get("UserProfile_NoFile");
+
+    // Заполняется из сохранённого профиля при LoadUserProfileAsync — имя
+    // кандидата (User.Name), используется как заглушка вместо имени файла,
+    // т.к. оригинальное имя CV-файла в БД не хранится (только CvFileHash).
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CvFileDisplayName))]
+    private string? _savedCandidateName;
+
+    [ObservableProperty]
+    private string _desiredRoles = string.Empty;
+
+    [ObservableProperty]
+    private int? _desiredSalaryMin;
+
+    [ObservableProperty]
+    private int? _desiredSalaryMax;
+
+    [ObservableProperty]
+    private string _salaryCurrency = string.Empty;
+
+    [ObservableProperty]
+    private string _locationPreference = string.Empty;
 
     [ObservableProperty]
     private string _cvFileInfo = string.Empty;
@@ -246,8 +270,13 @@ public partial class UserProfileViewModel : ObservableObject
     {
         _currentUserId = userId;
 
-        var skills = await _userProfileService.GetUserSkillsAsync(userId, ct);
+        var skillsTask = _userProfileService.GetUserSkillsAsync(userId, ct);
+        var profileTask = _userProfileService.GetProfileAsync(userId, ct);
+        var userTask = _userProfileService.GetUserAsync(userId, ct);
 
+        await Task.WhenAll(skillsTask, profileTask, userTask);
+
+        var skills = skillsTask.Result;
         Skills = new ObservableCollection<SkillItem>(skills.Select(s => new SkillItem
         {
             IsFromCv = s.ExtractedByClaude,
@@ -255,6 +284,27 @@ public partial class UserProfileViewModel : ObservableObject
             ProficiencyLevel = s.ProficiencyLevel,
             YearsOfExperience = (int)Math.Round(s.YearsOfExperience.GetValueOrDefault())
         }));
+
+        var user = userTask.Result;
+        SavedCandidateName = user?.Name;
+
+        var profile = profileTask.Result;
+        if (profile is null)
+            return;
+
+        DesiredRoles = profile.DesiredRoles;
+        DesiredSalaryMin = profile.DesiredSalaryMin;
+        DesiredSalaryMax = profile.DesiredSalaryMax;
+        SalaryCurrency = profile.SalaryCurrency;
+        LocationPreference = profile.LocationPreference;
+
+        // Заглушка вместо имени файла — оригинальное имя CV не хранится в БД.
+        // TODO: добавить ключ локализации UserProfile_CvParsedAt (ru/uk/en).
+        CvFileInfo = profile.CvParsedAt is { } parsedAt
+            ? string.Format(
+                LocalizationManager.Get("UserProfile_CvParsedAt"),
+                parsedAt.ToLocalTime())
+            : string.Empty;
     }
 
     partial void OnCvFileNameChanged(string value) => AnalyzeCvCommand.NotifyCanExecuteChanged();

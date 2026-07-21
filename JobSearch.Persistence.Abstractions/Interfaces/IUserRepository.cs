@@ -24,4 +24,9 @@ public interface IUserRepository
     Task<bool> ExistsAsync(
         Guid id,
         CancellationToken ct = default);
+
+    // ADR-0002: Worker resolves the target user via this method instead of
+    // login/bypass — returns the user with the most recent UpdatedAt.
+    Task<UserPersistenceDto?> GetMostRecentlyModifiedAsync(
+        CancellationToken ct = default);
 }

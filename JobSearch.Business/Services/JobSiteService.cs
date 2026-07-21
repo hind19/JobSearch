@@ -26,6 +26,15 @@ internal sealed class JobSiteService : IJobSiteService
         return dtos.Select(BusinessMapper.ToDto).ToList();
     }
 
+    // IJobSiteQueryService — used by JobSearch.Worker to load only the
+    // sites it should scrape, without depending on the full CRUD surface.
+    public async Task<List<JobSiteDto>> GetAllActiveAsync(
+        CancellationToken ct = default)
+    {
+        var dtos = await _jobSiteRepository.GetAllActiveAsync(ct);
+        return dtos.Select(BusinessMapper.ToDto).ToList();
+    }
+
     public async Task<JobSiteDto> CreateAsync(
         JobSiteDto dto,
         CancellationToken ct = default)

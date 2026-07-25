@@ -25,12 +25,15 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="16" />
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="16" />
-                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="16" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
 
                 <!-- Анализ CV -->
-                <Border Grid.Column="0"
+                <Border Grid.Row="0" Grid.Column="0"
                         Style="{StaticResource CardStyle}"
                         Margin="0">
                     <StackPanel>
@@ -56,7 +59,7 @@
                 </Border>
 
                 <!-- Сайты поиска -->
-                <Border Grid.Column="2"
+                <Border Grid.Row="0" Grid.Column="2"
                         Style="{StaticResource CardStyle}"
                         Margin="0">
                     <StackPanel>
@@ -82,7 +85,7 @@
                 </Border>
 
                 <!-- Настройки почты -->
-                <Border Grid.Column="4"
+                <Border Grid.Row="2" Grid.Column="0"
                         Style="{StaticResource CardStyle}"
                         Margin="0">
                     <StackPanel>
@@ -102,6 +105,32 @@
                                    Margin="0,0,0,20" />
                         <Button Content="{DynamicResource Common_Open}"
                                 Command="{Binding OpenEmailSettingsCommand}"
+                                Style="{StaticResource OutlineButtonStyle}"
+                                Padding="0,10" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Статистика -->
+                <Border Grid.Row="2" Grid.Column="2"
+                        Style="{StaticResource CardStyle}"
+                        Margin="0">
+                    <StackPanel>
+                        <TextBlock Text="📊"
+                                   FontSize="28"
+                                   Margin="0,0,0,12" />
+                        <TextBlock Text="{DynamicResource Home_StatisticsCard_Title}"
+                                   FontSize="16"
+                                   FontWeight="Medium"
+                                   Foreground="#212121"
+                                   Margin="0,0,0,8" />
+                        <TextBlock Text="{DynamicResource Home_StatisticsCard_Description}"
+                                   TextWrapping="Wrap"
+                                   FontSize="13"
+                                   Foreground="#757575"
+                                   LineHeight="20"
+                                   Margin="0,0,0,20" />
+                        <Button Content="{DynamicResource Common_Open}"
+                                Command="{Binding OpenStatisticsCommand}"
                                 Style="{StaticResource OutlineButtonStyle}"
                                 Padding="0,10" />
                     </StackPanel>

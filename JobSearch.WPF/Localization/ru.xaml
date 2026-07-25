@@ -16,6 +16,8 @@
     <sys:String x:Key="Home_JobSitesCard_Description">Настройте сайты с вакансиями — Worker будет ежедневно проверять первую страницу результатов</sys:String>
     <sys:String x:Key="Home_EmailSettingsCard_Title">Настройки почты</sys:String>
     <sys:String x:Key="Home_EmailSettingsCard_Description">SMTP-сервер для отправки дайджеста подходящих вакансий на почту</sys:String>
+    <sys:String x:Key="Home_StatisticsCard_Title">Статистика</sys:String>
+    <sys:String x:Key="Home_StatisticsCard_Description">Откуда приходят рекомендуемые вакансии — по сайтам</sys:String>
 
     <!-- UserProfile -->
     <sys:String x:Key="UserProfile_Section_Resume">Резюме</sys:String>
@@ -51,6 +53,9 @@
     <sys:String x:Key="EmailSettings_LoadError">Не удалось загрузить настройки почты: {0}</sys:String>
     <sys:String x:Key="EmailSettings_SaveSuccess">Настройки почты сохранены</sys:String>
     <sys:String x:Key="EmailSettings_SaveError">Не удалось сохранить настройки почты: {0}</sys:String>
+
+    <!-- Statistics -->
+    <sys:String x:Key="Statistics_LoadError">Не удалось загрузить статистику: {0}</sys:String>
 
     <!-- JobSites -->
     <sys:String x:Key="JobSites_Placeholder">Сайты поиска — в разработке</sys:String>

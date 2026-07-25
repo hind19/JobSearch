@@ -1,0 +1,86 @@
+<UserControl x:Class="JobSearch.WPF.Views.StatisticsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             FontFamily="Segoe UI"
+             FontSize="13">
+
+    <Border Background="#F2F2F2">
+        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+            <StackPanel MaxWidth="900"
+                        Margin="32,28,32,32">
+
+                <!-- ═══════════════ Header -->
+                <Grid Margin="0,0,0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0"
+                            Content="← Назад"
+                            Command="{Binding GoHomeCommand}"
+                            Style="{StaticResource OutlineButtonStyle}"
+                            Padding="10,8"
+                            VerticalAlignment="Center"
+                            Margin="0,0,12,0" />
+
+                    <StackPanel Grid.Column="1"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="Статистика по источникам"
+                                   FontSize="18"
+                                   FontWeight="SemiBold" />
+                        <TextBlock Text="Откуда приходят рекомендуемые вакансии"
+                                   Foreground="#757575"
+                                   FontSize="12"
+                                   Margin="0,3,0,0" />
+                    </StackPanel>
+                </Grid>
+
+                <!-- ═══════════════ Table -->
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel>
+
+                        <TextBlock Text="Нет данных — Worker ещё ни разу не запускался"
+                                   Foreground="#9E9E9E"
+                                   FontSize="13"
+                                   Margin="0,10,0,10"
+                                   Visibility="{Binding IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                        <DataGrid ItemsSource="{Binding Rows}"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="False"
+                                  CanUserDeleteRows="False"
+                                  IsReadOnly="True"
+                                  GridLinesVisibility="Horizontal"
+                                  HeadersVisibility="Column"
+                                  Visibility="{Binding IsEmpty, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Сайт"
+                                                     Binding="{Binding JobSiteName}"
+                                                     Width="*" />
+                                <DataGridTextColumn Header="Найдено вакансий"
+                                                     Binding="{Binding JobsScrapedCount}"
+                                                     Width="130" />
+                                <DataGridTextColumn Header="Совпадений"
+                                                     Binding="{Binding MatchesCount}"
+                                                     Width="110" />
+                                <DataGridTextColumn Header="Конверсия"
+                                                     Binding="{Binding MatchRateDisplay}"
+                                                     Width="100" />
+                                <DataGridTextColumn Header="Ср. релевантность"
+                                                     Binding="{Binding AverageScoreDisplay}"
+                                                     Width="140" />
+                                <DataGridTextColumn Header="Последнее совпадение"
+                                                     Binding="{Binding MostRecentMatchDisplay}"
+                                                     Width="160" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Border>
+</UserControl>

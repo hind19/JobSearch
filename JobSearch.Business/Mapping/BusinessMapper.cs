@@ -244,6 +244,19 @@ internal static class BusinessMapper
             updatedAt: dto.UpdatedAt
         );
 
+    // ─── JobSiteStatistics ───────────────────────────────────
+
+    internal static JobSiteStatisticsDto ToDto(
+        JobSiteStatisticsPersistenceDto dto) =>
+        new(
+            jobSiteId: dto.JobSiteId,
+            jobSiteName: dto.JobSiteName,
+            jobsScrapedCount: dto.JobsScrapedCount,
+            matchesCount: dto.MatchesCount,
+            averageRelevanceScore: dto.AverageRelevanceScore,
+            mostRecentMatchAt: dto.MostRecentMatchAt
+        );
+
     // ─── Helpers ─────────────────────────────────────────────
 
     private static ProficiencyLevel ParseProficiencyLevel(

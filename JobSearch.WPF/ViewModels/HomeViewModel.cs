@@ -10,6 +10,7 @@ public partial class HomeViewModel : ObservableObject
     public Action? NavigateToProfile { get; set; }
     public Action? NavigateToJobSites { get; set; }
     public Action? NavigateToEmailSettings { get; set; }
+    public Action? NavigateToStatistics { get; set; }
 
     [RelayCommand]
     private void OpenProfile() => NavigateToProfile?.Invoke();
@@ -19,4 +20,7 @@ public partial class HomeViewModel : ObservableObject
 
     [RelayCommand]
     private void OpenEmailSettings() => NavigateToEmailSettings?.Invoke();
+
+    [RelayCommand]
+    private void OpenStatistics() => NavigateToStatistics?.Invoke();
 }

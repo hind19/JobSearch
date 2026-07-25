@@ -26,4 +26,10 @@ public interface IUserJobMatchRepository
         Guid userId,
         List<Guid> jobIds,
         CancellationToken ct = default);
+
+    // ADR-0007: persistence foundation only — no Business/UI caller yet.
+    Task MarkAppliedAsync(
+        Guid matchId,
+        bool isApplied,
+        CancellationToken ct = default);
 }

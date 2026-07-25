@@ -13,19 +13,22 @@ public class WorkerRun
     private readonly IJobSiteQueryService _jobSiteQueryService;
     private readonly IJobSearchAgent _jobSearchAgent;
     private readonly IJobMatchService _jobMatchService;
+    private readonly IEmailSender _emailSender;
 
     public WorkerRun(
         ILogger<WorkerRun> logger,
         IUserProfileService userProfileService,
         IJobSiteQueryService jobSiteQueryService,
         IJobSearchAgent jobSearchAgent,
-        IJobMatchService jobMatchService)
+        IJobMatchService jobMatchService,
+        IEmailSender emailSender)
     {
         _logger = logger;
         _userProfileService = userProfileService;
         _jobSiteQueryService = jobSiteQueryService;
         _jobSearchAgent = jobSearchAgent;
         _jobMatchService = jobMatchService;
+        _emailSender = emailSender;
     }
 
     public async Task<int> ExecuteAsync(CancellationToken ct)
@@ -117,20 +120,49 @@ public class WorkerRun
                 "tool-call cap — results may be partial.", userId);
         }
 
-        // send_digest_email isn't a registered agent tool yet (blocked on
-        // IEmailSender, deferred). Surface what's pending instead of
-        // silently dropping it.
+        // send_digest_email isn't a registered agent tool (ADR-0005 §6 —
+        // sending is a deterministic, irreversible side effect, not left
+        // to the model's discretion).
         var unnotified = await _jobMatchService.GetUnnotifiedAsync(userId.Value, ct);
+
         if (unnotified.Count > 0)
         {
-            _logger.LogWarning(
-                "{Count} match(es) are unnotified but IEmailSender is not " +
-                "yet implemented — no digest was sent this run.",
-                unnotified.Count);
-            // TODO: once IEmailSender exists, either register
-            //       send_digest_email as an agent tool (per
-            //       worker-agent-tool-design.md), or send the digest
-            //       deterministically here using `unnotified` directly.
+            var user = await _userProfileService.GetUserAsync(userId.Value, ct);
+
+            if (user is null)
+            {
+                // Shouldn't happen — userId was just resolved from this
+                // same Users table — but fail loudly rather than send to
+                // a blank address if it somehow does.
+                _logger.LogError(
+                    "User {UserId} disappeared between resolution and " +
+                    "digest send. Skipping email.", userId);
+            }
+            else
+            {
+                var sendResult = await _emailSender.SendJobDigestAsync(
+                    userId.Value, user.Email, unnotified, ct);
+
+                if (sendResult.Sent)
+                {
+                    // ADR-0005 §5: only mark notified on actual success —
+                    // a failed send (even after all retries) leaves these
+                    // unnotified so the next run picks them up again.
+                    var jobIds = unnotified.Select(m => m.JobId).ToList();
+                    await _jobMatchService.MarkAsNotifiedAsync(userId.Value, jobIds, ct);
+
+                    _logger.LogInformation(
+                        "Sent digest with {Count} match(es) to {Email}.",
+                        unnotified.Count, user.Email);
+                }
+                else
+                {
+                    _logger.LogWarning(
+                        "Digest send failed for user {UserId}: {Error}. " +
+                        "{Count} match(es) remain unnotified for the next run.",
+                        userId, sendResult.ErrorMessage, unnotified.Count);
+                }
+            }
         }
 
         _logger.LogInformation(

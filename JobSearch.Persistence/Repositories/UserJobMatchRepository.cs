@@ -94,4 +94,21 @@ public class UserJobMatchRepository : IUserJobMatchRepository
 
         await _context.SaveChangesAsync(ct);
     }
+
+    // ADR-0007: persistence foundation only — no Business/UI caller yet.
+    public async Task MarkAppliedAsync(
+        Guid matchId,
+        bool isApplied,
+        CancellationToken ct = default)
+    {
+        var entity = await _context.UserJobMatches
+            .FirstOrDefaultAsync(m => m.Id == matchId, ct)
+                ?? throw new InvalidOperationException(
+                    $"UserJobMatch {matchId} not found.");
+
+        entity.IsApplied = isApplied;
+        entity.AppliedAt = isApplied ? DateTime.UtcNow : null;
+
+        await _context.SaveChangesAsync(ct);
+    }
 }

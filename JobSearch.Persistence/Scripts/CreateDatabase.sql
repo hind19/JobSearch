@@ -3,9 +3,14 @@ CREATE TABLE IF NOT EXISTS Users (
     Email           TEXT        NOT NULL,
     Name            TEXT        NOT NULL,
     CreatedAt       TEXT        NOT NULL,
+    UpdatedAt       TEXT        NOT NULL,
     IsActive        INTEGER     NOT NULL DEFAULT 1,
     CONSTRAINT UQ_Users_Email UNIQUE (Email)
 );
+
+-- ADR-0002: Worker resolves the target user by most recent UpdatedAt.
+CREATE INDEX IF NOT EXISTS IX_Users_UpdatedAt
+    ON Users (UpdatedAt DESC);
 
 CREATE TABLE IF NOT EXISTS UserProfiles (
     Id                  TEXT    NOT NULL PRIMARY KEY,
@@ -82,6 +87,9 @@ CREATE TABLE IF NOT EXISTS UserJobMatches (
     WasNotified     INTEGER NOT NULL DEFAULT 0,
     NotifiedAt      TEXT,
     FoundInRunAt    TEXT    NOT NULL,
+    -- ADR-0007: persistence foundation only — no Business/UI writes yet.
+    IsApplied       INTEGER NOT NULL DEFAULT 0,
+    AppliedAt       TEXT,
     CONSTRAINT FK_UserJobMatches_Users
         FOREIGN KEY (UserId) REFERENCES Users(Id) ON DELETE CASCADE,
     CONSTRAINT FK_UserJobMatches_Jobs
@@ -98,3 +106,44 @@ CREATE INDEX IF NOT EXISTS IX_UserJobMatches_WasNotified
 
 CREATE INDEX IF NOT EXISTS IX_UserJobMatches_FoundInRunAt
     ON UserJobMatches (FoundInRunAt);
+
+-- Log of every attempted email send. Status/AttemptCount/ErrorMessage let
+-- the retry policy (Polly, 3 attempts) record outcome without needing a
+-- separate audit mechanism.
+CREATE TABLE IF NOT EXISTS SentEmails (
+    Id              TEXT    NOT NULL PRIMARY KEY,
+    UserId          TEXT    NOT NULL,
+    ToAddress       TEXT    NOT NULL,
+    Subject         TEXT    NOT NULL,
+    Body            TEXT    NOT NULL,
+    Status          TEXT    NOT NULL DEFAULT 'Pending', -- Pending | Sent | Failed
+    AttemptCount    INTEGER NOT NULL DEFAULT 0,
+    ErrorMessage    TEXT,
+    SentAt          TEXT,
+    CreatedAt       TEXT    NOT NULL,
+    CONSTRAINT FK_SentEmails_Users
+        FOREIGN KEY (UserId) REFERENCES Users(Id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS IX_SentEmails_UserId_CreatedAt
+    ON SentEmails (UserId, CreatedAt);
+
+CREATE INDEX IF NOT EXISTS IX_SentEmails_Status
+    ON SentEmails (Status);
+
+-- SMTP settings editable via the new WPF form. Deliberately does NOT
+-- include a password/credential column — that stays in user-secrets /
+-- env vars only (EmailSettings:SmtpPassword), never written by the UI.
+-- Single-row table per ADR-0003 (single-user local deployment) — the
+-- application always upserts/reads the one row with Id = the well-known
+-- singleton GUID, rather than querying "all settings".
+CREATE TABLE IF NOT EXISTS EmailSettings (
+    Id                  TEXT    NOT NULL PRIMARY KEY,
+    SmtpHost            TEXT    NOT NULL,
+    SmtpPort            INTEGER NOT NULL,
+    UseSsl              INTEGER NOT NULL DEFAULT 1,
+    SmtpUsername        TEXT    NOT NULL DEFAULT '',
+    FromAddress         TEXT    NOT NULL,
+    FromDisplayName     TEXT    NOT NULL DEFAULT '',
+    UpdatedAt           TEXT    NOT NULL
+);

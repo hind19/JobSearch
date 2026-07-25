@@ -30,6 +30,13 @@ public class UserJobMatchConfiguration : IEntityTypeConfiguration<UserJobMatch>
         builder.Property(m => m.FoundInRunAt)
             .IsRequired();
 
+        // ADR-0007: persistence foundation only.
+        builder.Property(m => m.IsApplied)
+            .IsRequired()
+            .HasDefaultValue(false);
+
+        builder.Property(m => m.AppliedAt);
+
         builder.HasIndex(m => new { m.UserId, m.JobId })
             .IsUnique();
 

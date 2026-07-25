@@ -139,7 +139,10 @@ internal static class PersistenceMapper
             wasNotified: entity.WasNotified,
             notifiedAt: entity.NotifiedAt,
             foundInRunAt: entity.FoundInRunAt,
-            job: ToDto(entity.Job)
+            job: ToDto(entity.Job),
+            // ADR-0007: persistence foundation only.
+            isApplied: entity.IsApplied,
+            appliedAt: entity.AppliedAt
         );
 
     internal static UserJobMatch ToEntity(
@@ -153,6 +156,65 @@ internal static class PersistenceMapper
             RelevanceReason = dto.RelevanceReason,
             WasNotified = dto.WasNotified,
             NotifiedAt = dto.NotifiedAt,
-            FoundInRunAt = dto.FoundInRunAt
+            FoundInRunAt = dto.FoundInRunAt,
+            // ADR-0007: persistence foundation only.
+            IsApplied = dto.IsApplied,
+            AppliedAt = dto.AppliedAt
+        };
+
+    internal static SentEmailPersistenceDto ToDto(SentEmail entity) =>
+        new(
+            id: entity.Id,
+            userId: entity.UserId,
+            toAddress: entity.ToAddress,
+            subject: entity.Subject,
+            body: entity.Body,
+            status: entity.Status,
+            attemptCount: entity.AttemptCount,
+            errorMessage: entity.ErrorMessage,
+            sentAt: entity.SentAt,
+            createdAt: entity.CreatedAt
+        );
+
+    internal static SentEmail ToEntity(SentEmailPersistenceDto dto) =>
+        new()
+        {
+            Id = dto.Id,
+            UserId = dto.UserId,
+            ToAddress = dto.ToAddress,
+            Subject = dto.Subject,
+            Body = dto.Body,
+            Status = dto.Status,
+            AttemptCount = dto.AttemptCount,
+            ErrorMessage = dto.ErrorMessage,
+            SentAt = dto.SentAt,
+            CreatedAt = dto.CreatedAt
+        };
+
+    internal static EmailSettingsPersistenceDto ToDto(
+        EmailSettings entity) =>
+        new(
+            id: entity.Id,
+            smtpHost: entity.SmtpHost,
+            smtpPort: entity.SmtpPort,
+            useSsl: entity.UseSsl,
+            smtpUsername: entity.SmtpUsername,
+            fromAddress: entity.FromAddress,
+            fromDisplayName: entity.FromDisplayName,
+            updatedAt: entity.UpdatedAt
+        );
+
+    internal static EmailSettings ToEntity(
+        EmailSettingsPersistenceDto dto) =>
+        new()
+        {
+            Id = dto.Id,
+            SmtpHost = dto.SmtpHost,
+            SmtpPort = dto.SmtpPort,
+            UseSsl = dto.UseSsl,
+            SmtpUsername = dto.SmtpUsername,
+            FromAddress = dto.FromAddress,
+            FromDisplayName = dto.FromDisplayName,
+            UpdatedAt = dto.UpdatedAt
         };
 }

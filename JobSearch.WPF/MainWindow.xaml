@@ -22,6 +22,9 @@
         <DataTemplate DataType="{x:Type vm:JobSitesViewModel}">
             <views:JobSitesView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:EmailSettingsViewModel}">
+            <views:EmailSettingsView />
+        </DataTemplate>
     </Window.Resources>
 
     <ContentControl Content="{Binding CurrentViewModel}" />

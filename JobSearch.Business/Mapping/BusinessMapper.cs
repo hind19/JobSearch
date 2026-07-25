@@ -188,6 +188,62 @@ internal static class BusinessMapper
         List<UserJobMatchPersistenceDto> dtos) =>
         dtos.Select(ToDto).ToList();
 
+    // ─── SentEmail ───────────────────────────────────────────
+
+    internal static SentEmailDto ToDto(SentEmailPersistenceDto dto) =>
+        new(
+            id: dto.Id,
+            userId: dto.UserId,
+            toAddress: dto.ToAddress,
+            subject: dto.Subject,
+            body: dto.Body,
+            status: ParseEmailSendStatus(dto.Status),
+            attemptCount: dto.AttemptCount,
+            errorMessage: dto.ErrorMessage,
+            sentAt: dto.SentAt,
+            createdAt: dto.CreatedAt
+        );
+
+    internal static SentEmailPersistenceDto ToPersistenceDto(SentEmailDto dto) =>
+        new(
+            id: dto.Id,
+            userId: dto.UserId,
+            toAddress: dto.ToAddress,
+            subject: dto.Subject,
+            body: dto.Body,
+            status: dto.Status.ToString(),
+            attemptCount: dto.AttemptCount,
+            errorMessage: dto.ErrorMessage,
+            sentAt: dto.SentAt,
+            createdAt: dto.CreatedAt
+        );
+
+    // ─── EmailSettings ───────────────────────────────────────
+
+    internal static EmailSettingsDto ToDto(EmailSettingsPersistenceDto dto) =>
+        new(
+            id: dto.Id,
+            smtpHost: dto.SmtpHost,
+            smtpPort: dto.SmtpPort,
+            useSsl: dto.UseSsl,
+            smtpUsername: dto.SmtpUsername,
+            fromAddress: dto.FromAddress,
+            fromDisplayName: dto.FromDisplayName,
+            updatedAt: dto.UpdatedAt
+        );
+
+    internal static EmailSettingsPersistenceDto ToPersistenceDto(EmailSettingsDto dto) =>
+        new(
+            id: dto.Id,
+            smtpHost: dto.SmtpHost,
+            smtpPort: dto.SmtpPort,
+            useSsl: dto.UseSsl,
+            smtpUsername: dto.SmtpUsername,
+            fromAddress: dto.FromAddress,
+            fromDisplayName: dto.FromDisplayName,
+            updatedAt: dto.UpdatedAt
+        );
+
     // ─── Helpers ─────────────────────────────────────────────
 
     private static ProficiencyLevel ParseProficiencyLevel(
@@ -198,4 +254,13 @@ internal static class BusinessMapper
             out var result)
                 ? result
                 : ProficiencyLevel.NotSpecified;
+
+    private static EmailSendStatus ParseEmailSendStatus(
+        string value) =>
+        Enum.TryParse<EmailSendStatus>(
+            value,
+            ignoreCase: true,
+            out var result)
+                ? result
+                : EmailSendStatus.Pending;
 }

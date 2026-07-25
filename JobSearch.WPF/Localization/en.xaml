@@ -14,6 +14,8 @@
     <sys:String x:Key="Home_CvCard_Description">Upload your CV — Claude will extract skills and build a profile for job search</sys:String>
     <sys:String x:Key="Home_JobSitesCard_Title">Job Sites</sys:String>
     <sys:String x:Key="Home_JobSitesCard_Description">Configure job sites — Worker will check the first page of results daily</sys:String>
+    <sys:String x:Key="Home_EmailSettingsCard_Title">Email settings</sys:String>
+    <sys:String x:Key="Home_EmailSettingsCard_Description">SMTP server for sending the matched-jobs digest by email</sys:String>
 
     <!-- UserProfile -->
     <sys:String x:Key="UserProfile_Section_Resume">Resume</sys:String>
@@ -44,6 +46,11 @@
     <sys:String x:Key="UserProfile_Label_DesiredRoles">Desired roles</sys:String>
     <sys:String x:Key="UserProfile_Label_Salary">Salary</sys:String>
     <sys:String x:Key="UserProfile_Label_Location">Location</sys:String>
+
+    <!-- EmailSettings -->
+    <sys:String x:Key="EmailSettings_LoadError">Failed to load email settings: {0}</sys:String>
+    <sys:String x:Key="EmailSettings_SaveSuccess">Email settings saved</sys:String>
+    <sys:String x:Key="EmailSettings_SaveError">Failed to save email settings: {0}</sys:String>
 
     <!-- JobSites -->
     <sys:String x:Key="JobSites_Placeholder">Job sites — coming soon</sys:String>

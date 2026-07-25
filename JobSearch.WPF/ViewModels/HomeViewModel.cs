@@ -9,10 +9,14 @@ public partial class HomeViewModel : ObservableObject
     // устанавливается из MainViewModel после создания
     public Action? NavigateToProfile { get; set; }
     public Action? NavigateToJobSites { get; set; }
+    public Action? NavigateToEmailSettings { get; set; }
 
     [RelayCommand]
     private void OpenProfile() => NavigateToProfile?.Invoke();
 
     [RelayCommand]
     private void OpenJobSites() => NavigateToJobSites?.Invoke();
+
+    [RelayCommand]
+    private void OpenEmailSettings() => NavigateToEmailSettings?.Invoke();
 }

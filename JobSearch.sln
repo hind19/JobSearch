@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.37314.3
+# Visual Studio Version 18
+VisualStudioVersion = 18.8.12021.73
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobSearch.Application.Abstractions", "JobSearch.Application.Abstractions\JobSearch.Application.Abstractions.csproj", "{61A5DAD0-78C1-4708-A295-5275A6EA353B}"
 EndProject
@@ -27,6 +27,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ADRs", "ADRs", "{754FC069-D
 		ADRs\0002-worker-user-identity-resolution.md = ADRs\0002-worker-user-identity-resolution.md
 		ADRs\0003-single-user-local-deployment.md = ADRs\0003-single-user-local-deployment.md
 		ADRs\0004-worker-agent-loop-architecture.md = ADRs\0004-worker-agent-loop-architecture.md
+		ADRs\0005-email-sending-architecture.md = ADRs\0005-email-sending-architecture.md
+		ADRs\0006-job-source-statistics-service.md = ADRs\0006-job-source-statistics-service.md
+		ADRs\0007-job-application-tracking-persistence-foundation.md = ADRs\0007-job-application-tracking-persistence-foundation.md
 	EndProjectSection
 EndProject
 Global

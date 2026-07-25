@@ -4,7 +4,7 @@
 
     <Grid VerticalAlignment="Center"
           HorizontalAlignment="Center"
-          Width="520">
+          Width="780">
         <StackPanel>
 
             <TextBlock Text="{DynamicResource Home_Title}"
@@ -22,6 +22,8 @@
 
             <Grid>
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="16" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="16" />
                     <ColumnDefinition Width="*" />
@@ -74,6 +76,32 @@
                                    Margin="0,0,0,20" />
                         <Button Content="{DynamicResource Common_Open}"
                                 Command="{Binding OpenJobSitesCommand}"
+                                Style="{StaticResource OutlineButtonStyle}"
+                                Padding="0,10" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Настройки почты -->
+                <Border Grid.Column="4"
+                        Style="{StaticResource CardStyle}"
+                        Margin="0">
+                    <StackPanel>
+                        <TextBlock Text="✉️"
+                                   FontSize="28"
+                                   Margin="0,0,0,12" />
+                        <TextBlock Text="{DynamicResource Home_EmailSettingsCard_Title}"
+                                   FontSize="16"
+                                   FontWeight="Medium"
+                                   Foreground="#212121"
+                                   Margin="0,0,0,8" />
+                        <TextBlock Text="{DynamicResource Home_EmailSettingsCard_Description}"
+                                   TextWrapping="Wrap"
+                                   FontSize="13"
+                                   Foreground="#757575"
+                                   LineHeight="20"
+                                   Margin="0,0,0,20" />
+                        <Button Content="{DynamicResource Common_Open}"
+                                Command="{Binding OpenEmailSettingsCommand}"
                                 Style="{StaticResource OutlineButtonStyle}"
                                 Padding="0,10" />
                     </StackPanel>

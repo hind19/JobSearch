@@ -17,6 +17,8 @@ public class AppDbContext : DbContext
     public DbSet<JobSite> JobSites => Set<JobSite>();
     public DbSet<Job> Jobs => Set<Job>();
     public DbSet<UserJobMatch> UserJobMatches => Set<UserJobMatch>();
+    public DbSet<SentEmail> SentEmails => Set<SentEmail>();
+    public DbSet<EmailSettings> EmailSettings => Set<EmailSettings>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -26,6 +28,8 @@ public class AppDbContext : DbContext
         modelBuilder.ApplyConfiguration(new JobSiteConfiguration());
         modelBuilder.ApplyConfiguration(new JobConfiguration());
         modelBuilder.ApplyConfiguration(new UserJobMatchConfiguration());
+        modelBuilder.ApplyConfiguration(new SentEmailConfiguration());
+        modelBuilder.ApplyConfiguration(new EmailSettingsConfiguration());
 
         base.OnModelCreating(modelBuilder);
     }

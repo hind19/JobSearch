@@ -16,6 +16,7 @@ public static class WpfServiceExtensions
         services.AddTransient<HomeViewModel>();
         services.AddTransient<UserProfileViewModel>();
         services.AddTransient<JobSitesViewModel>();
+        services.AddTransient<EmailSettingsViewModel>();
 
         services.AddTransient<LoginWindow>();
         services.AddTransient<LoginViewModel>();

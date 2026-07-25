@@ -1,0 +1,8 @@
+Hello,
+
+We found {{JobCount}} new job match(es) for you:
+
+{{JobListing}}
+
+Best regards,
+JobSearch

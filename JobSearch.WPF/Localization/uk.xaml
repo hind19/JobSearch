@@ -14,6 +14,8 @@
     <sys:String x:Key="Home_CvCard_Description">Завантажте резюме — Claude витягне навички та складе профіль для пошуку вакансій</sys:String>
     <sys:String x:Key="Home_JobSitesCard_Title">Сайти пошуку</sys:String>
     <sys:String x:Key="Home_JobSitesCard_Description">Налаштуйте сайти з вакансіями — Worker щодня перевірятиме першу сторінку результатів</sys:String>
+    <sys:String x:Key="Home_EmailSettingsCard_Title">Налаштування пошти</sys:String>
+    <sys:String x:Key="Home_EmailSettingsCard_Description">SMTP-сервер для надсилання дайджесту підходящих вакансій на пошту</sys:String>
 
     <!-- UserProfile -->
     <sys:String x:Key="UserProfile_Section_Resume">Резюме</sys:String>
@@ -44,6 +46,11 @@
     <sys:String x:Key="UserProfile_Label_DesiredRoles">Бажані ролі</sys:String>
     <sys:String x:Key="UserProfile_Label_Salary">Зарплата</sys:String>
     <sys:String x:Key="UserProfile_Label_Location">Локація</sys:String>
+
+    <!-- EmailSettings -->
+    <sys:String x:Key="EmailSettings_LoadError">Не вдалося завантажити налаштування пошти: {0}</sys:String>
+    <sys:String x:Key="EmailSettings_SaveSuccess">Налаштування пошти збережено</sys:String>
+    <sys:String x:Key="EmailSettings_SaveError">Не вдалося зберегти налаштування пошти: {0}</sys:String>
 
     <!-- JobSites -->
     <sys:String x:Key="JobSites_Placeholder">Сайти пошуку — в розробці</sys:String>

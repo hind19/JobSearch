@@ -9,7 +9,13 @@ public class UserJobMatchPersistenceDto(
     bool wasNotified,
     DateTime? notifiedAt,
     DateTime foundInRunAt,
-    JobPersistenceDto job)
+    JobPersistenceDto job,
+    // ADR-0007: persistence foundation only. Optional with defaults so
+    // every existing call site (JobMatchService.TryCreateMatchAsync,
+    // PersistenceMapper) keeps compiling unmodified — nothing sets these
+    // to anything but the defaults yet.
+    bool isApplied = false,
+    DateTime? appliedAt = null)
 {
     public Guid Id { get; } = id;
     public Guid UserId { get; } = userId;
@@ -20,4 +26,6 @@ public class UserJobMatchPersistenceDto(
     public DateTime? NotifiedAt { get; } = notifiedAt;
     public DateTime FoundInRunAt { get; } = foundInRunAt;
     public JobPersistenceDto Job { get; } = job;
+    public bool IsApplied { get; } = isApplied;
+    public DateTime? AppliedAt { get; } = appliedAt;
 }

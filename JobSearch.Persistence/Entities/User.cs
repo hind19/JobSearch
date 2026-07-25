@@ -15,4 +15,5 @@ public class User
     public UserProfile? Profile { get; set; }
     public List<UserSkill> Skills { get; set; } = [];
     public List<UserJobMatch> JobMatches { get; set; } = [];
+    public List<SentEmail> SentEmails { get; set; } = [];
 }

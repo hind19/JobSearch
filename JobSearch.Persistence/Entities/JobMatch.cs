@@ -11,6 +11,10 @@ public class UserJobMatch
     public DateTime? NotifiedAt { get; set; }
     public DateTime FoundInRunAt { get; set; }
 
+    // ADR-0007: persistence foundation only — nothing sets these yet.
+    public bool IsApplied { get; set; }
+    public DateTime? AppliedAt { get; set; }
+
     public User User { get; set; } = null!;
     public Job Job { get; set; } = null!;
 }

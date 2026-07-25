@@ -15,6 +15,8 @@ public static class BusinessServiceExtensions
         services.AddScoped<IJobMatchService, JobMatchService>();
         services.AddScoped<IJobIngestService, JobIngestService>();
         services.AddSingleton<IJobUrlHasher, JobUrlHasher>();
+        services.AddScoped<IEmailAuditLog, EmailAuditLog>();
+        services.AddScoped<IEmailSettingsService, EmailSettingsService>();
         services.AddScoped<IJobSiteService, JobSiteService>();
         // ISP split: Worker depends on the narrow IJobSiteQueryService,
         // WPF depends on the full IJobSiteService. Both resolve to the

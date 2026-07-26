@@ -65,6 +65,11 @@
     <sys:String x:Key="JobSites_Popup_Empty">Посилань не знайдено — перевірте селектори</sys:String>
     <sys:String x:Key="JobSites_Error_Test">Не вдалося перевірити конфігурацію: {0}</sys:String>
     <sys:String x:Key="JobSites_Error_Detect">Не вдалося визначити селектори: {0}</sys:String>
+    <sys:String x:Key="JobSites_Delete_Confirm">Видалити сайт «{0}» зі списку?</sys:String>
+    <sys:String x:Key="JobSites_Error_Delete">Не вдалося видалити сайт: {0}</sys:String>
+    <sys:String x:Key="JobSites_Error_Load">Не вдалося завантажити список сайтів: {0}</sys:String>
+    <sys:String x:Key="JobSites_Error_Save">Не вдалося зберегти сайт: {0}</sys:String>
+    <sys:String x:Key="JobSites_Error_Status">Не вдалося змінити статус сайту: {0}</sys:String>
 
     <!-- Login -->
     <sys:String x:Key="Login_WindowTitle">JobSearch — Вхід</sys:String>

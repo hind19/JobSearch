@@ -65,6 +65,11 @@
     <sys:String x:Key="JobSites_Popup_Empty">No links found — check your selectors</sys:String>
     <sys:String x:Key="JobSites_Error_Test">Failed to test configuration: {0}</sys:String>
     <sys:String x:Key="JobSites_Error_Detect">Failed to detect selectors: {0}</sys:String>
+    <sys:String x:Key="JobSites_Delete_Confirm">Delete site "{0}" from the list?</sys:String>
+    <sys:String x:Key="JobSites_Error_Delete">Failed to delete site: {0}</sys:String>
+    <sys:String x:Key="JobSites_Error_Load">Failed to load job sites: {0}</sys:String>
+    <sys:String x:Key="JobSites_Error_Save">Failed to save site: {0}</sys:String>
+    <sys:String x:Key="JobSites_Error_Status">Failed to change site status: {0}</sys:String>
 
     <!-- Login -->
     <sys:String x:Key="Login_WindowTitle">JobSearch — Sign In</sys:String>

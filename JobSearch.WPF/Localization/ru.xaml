@@ -65,6 +65,11 @@
     <sys:String x:Key="JobSites_Popup_Empty">Ссылок не найдено — проверьте селекторы</sys:String>
     <sys:String x:Key="JobSites_Error_Test">Не удалось протестировать конфигурацию: {0}</sys:String>
     <sys:String x:Key="JobSites_Error_Detect">Не удалось определить селекторы: {0}</sys:String>
+    <sys:String x:Key="JobSites_Delete_Confirm">Удалить сайт «{0}» из списка?</sys:String>
+    <sys:String x:Key="JobSites_Error_Delete">Не удалось удалить сайт: {0}</sys:String>
+    <sys:String x:Key="JobSites_Error_Load">Не удалось загрузить список сайтов: {0}</sys:String>
+    <sys:String x:Key="JobSites_Error_Save">Не удалось сохранить сайт: {0}</sys:String>
+    <sys:String x:Key="JobSites_Error_Status">Не удалось изменить статус сайта: {0}</sys:String>
 
     <!-- Login -->
     <sys:String x:Key="Login_WindowTitle">JobSearch — Вход</sys:String>

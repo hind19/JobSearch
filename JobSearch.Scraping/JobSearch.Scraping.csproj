@@ -11,8 +11,7 @@
     <PackageReference Include="HtmlAgilityPack.CssSelectors" Version="1.0.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.17" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.7" />
-    <PackageReference Include="Microsoft.Playwright" Version="1.60.0" />
-  </ItemGroup>
+   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\JobSearch.Application.Abstractions\JobSearch.Application.Abstractions.csproj" />

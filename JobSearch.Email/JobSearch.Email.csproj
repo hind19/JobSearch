@@ -21,4 +21,10 @@
     <ProjectReference Include="..\JobSearch.Application.Abstractions\JobSearch.Application.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Templates\JobDigestEmail.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

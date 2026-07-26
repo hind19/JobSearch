@@ -49,10 +49,10 @@ public class UserJobMatchRepository : IUserJobMatchRepository
             .Include(m => m.Job)
             .Where(m => m.UserId == userId &&
                         m.WasNotified == false)
-            .OrderByDescending(m => m.RelevanceScore)
             .ToListAsync(ct);
 
         return entities
+            .OrderByDescending(m => m.RelevanceScore)
             .Select(PersistenceMapper.ToDto)
             .ToList();
     }

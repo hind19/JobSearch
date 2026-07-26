@@ -4,7 +4,8 @@ public class Job
 {
     public Guid Id { get; set; }
     public Guid JobSiteId { get; set; }
-    public string ExternalId { get; set; } = string.Empty;
+    // ADR-0008: nullable in DB, reserved for future use
+    public string? ExternalId { get; set; }
     public string Url { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
     public string Company { get; set; } = string.Empty;

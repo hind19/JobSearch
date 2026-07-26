@@ -3,7 +3,7 @@ namespace JobSearch.Application.Abstractions.DTOs;
 public class JobDto(
     Guid id,
     Guid jobSiteId,
-    string externalId,
+    string? externalId,
     string url,
     string title,
     string company,
@@ -16,7 +16,7 @@ public class JobDto(
 {
     public Guid Id { get; } = id;
     public Guid JobSiteId { get; } = jobSiteId;
-    public string ExternalId { get; } = externalId;
+    public string? ExternalId { get; } = externalId;
     public string Url { get; } = url;
     public string Title { get; } = title;
     public string Company { get; } = company;

@@ -71,7 +71,7 @@ public class JobIngestServiceTests
         var jobDto = new JobDto(
             id: Guid.NewGuid(),
             jobSiteId: Guid.NewGuid(),
-            externalId: "ext-123",
+            externalId: null, // ADR-0008: nullable, reserved for future use
             url: "https://example.com/job/123",
             title: "Software Developer",
             company: "Test Company",
@@ -128,7 +128,7 @@ public class JobIngestServiceTests
         var jobDto = new JobDto(
             id: Guid.NewGuid(),
             jobSiteId: Guid.NewGuid(),
-            externalId: "ext-789",
+            externalId: null, // ADR-0008: nullable, reserved for future use
             url: "https://example.com/job/789",
             title: "DevOps Engineer",
             company: "Another Company",
@@ -219,7 +219,7 @@ public class JobIngestServiceTests
         return new JobDto(
             id: Guid.NewGuid(),
             jobSiteId: Guid.NewGuid(),
-            externalId: "test-ext",
+            externalId: null, // ADR-0008: nullable, reserved for future use
             url: "https://example.com/test",
             title: "Test Job",
             company: "Test Co",

@@ -16,8 +16,8 @@ public class JobConfiguration : IEntityTypeConfiguration<Job>
         builder.Property(j => j.Id)
             .ValueGeneratedOnAdd();
 
+        // ADR-0008: nullable in DB, reserved for future use
         builder.Property(j => j.ExternalId)
-            .IsRequired()
             .HasMaxLength(255);
 
         builder.Property(j => j.Url)

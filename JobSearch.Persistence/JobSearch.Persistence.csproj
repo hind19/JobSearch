@@ -16,10 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Scripts\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="Scripts\CreateDatabase">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

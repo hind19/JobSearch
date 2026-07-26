@@ -34,6 +34,11 @@ public static class AiServiceExtensions
         services.Configure<AnthropicSettings>(
             configuration.GetSection("AnthropicSettings"));
 
+        // ADR-0004 guardrail #3: JobSearchAgent reads MaxAgentToolCalls
+        // from here instead of a hardcoded constant.
+        services.Configure<WorkerSettings>(
+            configuration.GetSection("WorkerSettings"));
+
         services.AddScoped<ICvParser, CvParser>();
         services.AddScoped<IQuestionGenerator, QuestionGenerator>();
         services.AddScoped<IProfileEnricher, ProfileEnricher>();

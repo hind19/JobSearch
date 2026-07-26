@@ -59,6 +59,12 @@
 
     <!-- JobSites -->
     <sys:String x:Key="JobSites_Placeholder">Сайти пошуку — в розробці</sys:String>
+    <sys:String x:Key="JobSites_Popup_Title">Перевірка конфігурації:</sys:String>
+    <sys:String x:Key="JobSites_Popup_Close">Закрити</sys:String>
+    <sys:String x:Key="JobSites_Popup_Found">Знайдено посилань: {0}</sys:String>
+    <sys:String x:Key="JobSites_Popup_Empty">Посилань не знайдено — перевірте селектори</sys:String>
+    <sys:String x:Key="JobSites_Error_Test">Не вдалося перевірити конфігурацію: {0}</sys:String>
+    <sys:String x:Key="JobSites_Error_Detect">Не вдалося визначити селектори: {0}</sys:String>
 
     <!-- Login -->
     <sys:String x:Key="Login_WindowTitle">JobSearch — Вхід</sys:String>

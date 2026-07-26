@@ -54,7 +54,32 @@ internal sealed class SaveJobTool : IAgentTool
     public async Task<string> ExecuteAsync(
         Guid userId, JsonNode? input, CancellationToken ct)
     {
-        var url = input!["url"]!.GetValue<string>();
+        // Validate required fields
+        var url = input?["url"]?.GetValue<string>();
+        var title = input?["title"]?.GetValue<string>();
+        var company = input?["company"]?.GetValue<string>();
+        var descriptionRaw = input?["descriptionRaw"]?.GetValue<string>();
+
+        if (string.IsNullOrWhiteSpace(url) || 
+            string.IsNullOrWhiteSpace(title) || 
+            string.IsNullOrWhiteSpace(company) || 
+            string.IsNullOrWhiteSpace(descriptionRaw))
+        {
+            return JsonSerializer.Serialize(new
+            {
+                error = "Required fields missing or null",
+                receivedFields = new
+                {
+                    url = url ?? "(null or missing)",
+                    title = title ?? "(null or missing)",
+                    company = company ?? "(null or missing)",
+                    descriptionRaw = descriptionRaw ?? "(null or missing)",
+                    location = input?["location"]?.GetValue<string>() ?? "(null or missing)",
+                    salaryRaw = input?["salaryRaw"]?.GetValue<string>() ?? "(null or missing)",
+                    postedAt = input?["postedAt"]?.GetValue<string>() ?? "(null or missing)"
+                }
+            });
+        }
 
         // ADR-0004 guardrail #2: reject a URL Claude didn't actually
         // fetch via a real tool call in this run.
@@ -74,11 +99,11 @@ internal sealed class SaveJobTool : IAgentTool
             jobSiteId: jobSiteId,
             externalId: null,
             url: url,
-            title: input["title"]!.GetValue<string>(),
-            company: input["company"]!.GetValue<string>(),
+            title: title,
+            company: company,
             location: input["location"]?.GetValue<string>() ?? string.Empty,
             salaryRaw: input["salaryRaw"]?.GetValue<string>() ?? string.Empty,
-            descriptionRaw: input["descriptionRaw"]!.GetValue<string>(),
+            descriptionRaw: descriptionRaw,
             postedAt: postedAt,
             foundAt: DateTime.UtcNow,
             // ADR-0004 guardrail #2: placeholder — JobIngestService

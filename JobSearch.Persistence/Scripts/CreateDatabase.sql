@@ -54,7 +54,11 @@ CREATE TABLE IF NOT EXISTS JobSites (
 CREATE TABLE IF NOT EXISTS Jobs (
     Id              TEXT    NOT NULL PRIMARY KEY,
     JobSiteId       TEXT    NOT NULL,
-    ExternalId      TEXT    NOT NULL,
+    -- ADR-0008: nullable and unpopulated for now — reserved for future
+    -- use (secondary dedup key / display value). SaveJobTool always
+    -- passes null; this was previously NOT NULL, which risked a
+    -- constraint violation on every job save.
+    ExternalId      TEXT,
     Url             TEXT    NOT NULL,
     Title           TEXT    NOT NULL,
     Company         TEXT    NOT NULL,
@@ -68,6 +72,9 @@ CREATE TABLE IF NOT EXISTS Jobs (
         FOREIGN KEY (JobSiteId) REFERENCES JobSites(Id) ON DELETE RESTRICT,
     CONSTRAINT UQ_Jobs_UrlHash
         UNIQUE (UrlHash),
+    -- Safe while ExternalId is always NULL: SQL treats every NULL as
+    -- distinct for UNIQUE purposes, so multiple NULL rows per JobSiteId
+    -- don't conflict. Starts enforcing real uniqueness once populated.
     CONSTRAINT UQ_Jobs_JobSiteId_ExternalId
         UNIQUE (JobSiteId, ExternalId)
 );

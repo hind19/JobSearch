@@ -77,9 +77,29 @@ internal sealed class JobSiteService : IJobSiteService
 
             return (true, null, links);
         }
+        catch (HttpRequestException ex)
+        {
+            var statusText = ex.StatusCode.HasValue
+                ? $"{(int)ex.StatusCode.Value} ({ex.StatusCode.Value})"
+                : "неизвестен";
+
+            return (false,
+                $"Сайт вернул ошибку (HTTP {statusText}). Возможно, " +
+                "сайт блокирует автоматические запросы или требует " +
+                "заголовок User-Agent.",
+                []);
+        }
+        catch (TaskCanceledException) when (!ct.IsCancellationRequested)
+        {
+            return (false,
+                "Превышено время ожидания ответа от сайта.",
+                []);
+        }
         catch (Exception ex)
         {
-            return (false, ex.Message, []);
+            return (false,
+                $"Не удалось проверить конфигурацию: {ex.Message}",
+                []);
         }
     }
 }

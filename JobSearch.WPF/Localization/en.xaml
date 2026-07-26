@@ -59,6 +59,12 @@
 
     <!-- JobSites -->
     <sys:String x:Key="JobSites_Placeholder">Job sites — coming soon</sys:String>
+    <sys:String x:Key="JobSites_Popup_Title">Configuration test:</sys:String>
+    <sys:String x:Key="JobSites_Popup_Close">Close</sys:String>
+    <sys:String x:Key="JobSites_Popup_Found">Links found: {0}</sys:String>
+    <sys:String x:Key="JobSites_Popup_Empty">No links found — check your selectors</sys:String>
+    <sys:String x:Key="JobSites_Error_Test">Failed to test configuration: {0}</sys:String>
+    <sys:String x:Key="JobSites_Error_Detect">Failed to detect selectors: {0}</sys:String>
 
     <!-- Login -->
     <sys:String x:Key="Login_WindowTitle">JobSearch — Sign In</sys:String>

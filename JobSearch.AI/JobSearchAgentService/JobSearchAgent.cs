@@ -2,9 +2,11 @@
 using System.Text.Json;
 using Anthropic.SDK;
 using Anthropic.SDK.Messaging;
+using JobSearch.Application.Abstractions.Configuration;
 using JobSearch.Application.Abstractions.DTOs;
 using JobSearch.Application.Abstractions.Interfaces;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace JobSearch.AI.JobSearchAgentService;
 
@@ -18,26 +20,23 @@ internal sealed class JobSearchAgent : IJobSearchAgent
     private const string Model = "claude-sonnet-4-6";
     private const int MaxTokens = 4096;
 
-    // ADR-0004 guardrail #3: hard cap, independent of what Claude "thinks"
-    // it still needs to do.
-    // TODO: move to a config value (e.g. WorkerSettings:MaxAgentToolCalls)
-    // once that key exists — open question from worker-agent-tool-design.md.
-    private const int MaxToolCalls = 150;
-
     private readonly AnthropicClient _client;
     private readonly IReadOnlyList<IAgentTool> _tools;
     private readonly JobSearchAgentRunContext _runContext;
+    private readonly IOptions<WorkerSettings> _workerSettings;
     private readonly ILogger<JobSearchAgent> _logger;
 
     public JobSearchAgent(
         AnthropicClient client,
         IEnumerable<IAgentTool> tools,
         JobSearchAgentRunContext runContext,
+        IOptions<WorkerSettings> workerSettings,
         ILogger<JobSearchAgent> logger)
     {
         _client = client;
         _tools = tools.ToList();
         _runContext = runContext;
+        _workerSettings = workerSettings;
         _logger = logger;
     }
 
@@ -47,6 +46,12 @@ internal sealed class JobSearchAgent : IJobSearchAgent
         List<JobSiteDto> activeSites,
         CancellationToken ct = default)
     {
+        // ADR-0004 guardrail #3: hard cap, independent of what Claude
+        // "thinks" it still needs to do. Read from config
+        // (WorkerSettings:MaxAgentToolCalls) rather than hardcoded, so it
+        // can be tuned without a rebuild.
+        var maxToolCalls = _workerSettings.Value.MaxAgentToolCalls;
+
         foreach (var site in activeSites)
             _runContext.ActiveSitesById[site.Id] = site;
 
@@ -74,7 +79,7 @@ internal sealed class JobSearchAgent : IJobSearchAgent
 
         var completed = false;
 
-        while (_runContext.ToolCallCount < MaxToolCalls)
+        while (_runContext.ToolCallCount < maxToolCalls)
         {
             var request = new MessageParameters
             {
@@ -140,7 +145,7 @@ internal sealed class JobSearchAgent : IJobSearchAgent
                     Content = [new TextContent { Text = resultJson }]
                 });
 
-                if (_runContext.ToolCallCount >= MaxToolCalls)
+                if (_runContext.ToolCallCount >= maxToolCalls)
                 {
                     hitCap = true;
                     break;
@@ -157,7 +162,7 @@ internal sealed class JobSearchAgent : IJobSearchAgent
             {
                 _logger.LogWarning(
                     "Agent hit the {MaxToolCalls}-tool-call cap; stopping run early without a final answer.",
-                    MaxToolCalls);
+                    maxToolCalls);
                 break;
             }
         }

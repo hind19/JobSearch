@@ -12,15 +12,18 @@ namespace JobSearch.Business.Services;
 internal sealed class JobMatchService : IJobMatchService
 {
     private readonly IUserJobMatchRepository _userJobMatchRepository;
+    private readonly IUserJobRejectionRepository _userJobRejectionRepository;
     private readonly IJobRepository _jobRepository;
     private readonly IOptions<AnthropicSettings> _anthropicSettings;
 
     public JobMatchService(
         IUserJobMatchRepository userJobMatchRepository,
+        IUserJobRejectionRepository userJobRejectionRepository,
         IJobRepository jobRepository,
         IOptions<AnthropicSettings> anthropicSettings)
     {
         _userJobMatchRepository = userJobMatchRepository;
+        _userJobRejectionRepository = userJobRejectionRepository;
         _jobRepository = jobRepository;
         _anthropicSettings = anthropicSettings;
     }
@@ -38,13 +41,34 @@ internal sealed class JobMatchService : IJobMatchService
         var clampedScore = Math.Clamp(score, 0, 100);
         var threshold = _anthropicSettings.Value.RelevanceThreshold;
 
-        if (clampedScore < threshold)
-            return null; // not an error — "below threshold" is a normal outcome
-
+        // ADR-0009: the existence guard now runs for both outcomes — a
+        // rejection needs a valid Job to record against, same as a match
+        // does. (Previously this guard only ran on the match-creation
+        // path; below-threshold returned early without touching the
+        // repository at all.)
         var job = await _jobRepository.GetByIdAsync(jobId, ct)
             ?? throw new InvalidOperationException(
                 $"Job {jobId} not found — score_relevance must be called " +
                 "with a jobId returned by a prior save_job call in this run.");
+
+        if (clampedScore < threshold)
+        {
+            // ADR-0009: "below threshold" is still a normal outcome — no
+            // match is created — but the score/reason are no longer
+            // discarded; they're persisted so the user can see why a job
+            // was rejected.
+            var rejectionDto = new UserJobRejectionPersistenceDto(
+                id: Guid.NewGuid(),
+                userId: userId,
+                jobId: jobId,
+                relevanceScore: clampedScore,
+                relevanceReason: reason,
+                analyzedAt: DateTime.UtcNow,
+                job: job);
+
+            await _userJobRejectionRepository.CreateAsync(rejectionDto, ct);
+            return null;
+        }
 
         var matchDto = new UserJobMatchPersistenceDto(
             id: Guid.NewGuid(),

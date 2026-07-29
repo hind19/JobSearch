@@ -257,6 +257,30 @@ internal static class BusinessMapper
             mostRecentMatchAt: dto.MostRecentMatchAt
         );
 
+    // ─── UserJobRejection (ADR-0009) ─────────────────────────
+
+    internal static RejectedJobDto ToDto(
+        UserJobRejectionPersistenceDto dto) =>
+        new(
+            id: dto.Id,
+            jobUrl: dto.Job.Url,
+            jobTitle: dto.Job.Title,
+            relevanceScore: dto.RelevanceScore,
+            relevanceReason: dto.RelevanceReason,
+            analyzedAt: dto.AnalyzedAt
+        );
+
+    internal static RejectedJobsPageDto ToDto(
+        RejectedJobsPagePersistenceDto dto,
+        int page,
+        int pageSize) =>
+        new(
+            items: dto.Items.Select(ToDto).ToList(),
+            totalCount: dto.TotalCount,
+            page: page,
+            pageSize: pageSize
+        );
+
     // ─── Helpers ─────────────────────────────────────────────
 
     private static ProficiencyLevel ParseProficiencyLevel(

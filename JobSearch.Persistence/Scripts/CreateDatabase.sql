@@ -114,6 +114,27 @@ CREATE INDEX IF NOT EXISTS IX_UserJobMatches_WasNotified
 CREATE INDEX IF NOT EXISTS IX_UserJobMatches_FoundInRunAt
     ON UserJobMatches (FoundInRunAt);
 
+-- ADR-0009: jobs Claude analyzed and scored below RelevanceThreshold.
+-- Parallel structure to UserJobMatches, without WasNotified/IsApplied —
+-- those concepts don't apply to a rejected job.
+CREATE TABLE IF NOT EXISTS UserJobRejections (
+    Id              TEXT    NOT NULL PRIMARY KEY,
+    UserId          TEXT    NOT NULL,
+    JobId           TEXT    NOT NULL,
+    RelevanceScore  REAL    NOT NULL,
+    RelevanceReason TEXT,
+    AnalyzedAt      TEXT    NOT NULL,
+    CONSTRAINT FK_UserJobRejections_Users
+        FOREIGN KEY (UserId) REFERENCES Users(Id) ON DELETE CASCADE,
+    CONSTRAINT FK_UserJobRejections_Jobs
+        FOREIGN KEY (JobId) REFERENCES Jobs(Id) ON DELETE CASCADE,
+    CONSTRAINT UQ_UserJobRejections_UserId_JobId
+        UNIQUE (UserId, JobId)
+);
+
+CREATE INDEX IF NOT EXISTS IX_UserJobRejections_UserId_AnalyzedAt
+    ON UserJobRejections (UserId, AnalyzedAt);
+
 -- Log of every attempted email send. Status/AttemptCount/ErrorMessage let
 -- the retry policy (Polly, 3 attempts) record outcome without needing a
 -- separate audit mechanism.

@@ -14,6 +14,11 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private ObservableObject _currentViewModel;
 
+    // ADR-0009: StatisticsViewModel's rejected-jobs tab is user-scoped,
+    // unlike the per-site tab — needs the userId that InitializeAsync
+    // receives, forwarded on navigation.
+    private Guid _userId;
+
     public MainViewModel(
         HomeViewModel homeViewModel,
         UserProfileViewModel userProfileViewModel,
@@ -41,6 +46,7 @@ public partial class MainViewModel : ObservableObject
 
     public async Task InitializeAsync(Guid userId)
     {
+        _userId = userId;
         await _userProfileViewModel.LoadUserProfileAsync(userId);
     }
 
@@ -58,7 +64,7 @@ public partial class MainViewModel : ObservableObject
     private async void NavigateToStatistics()
     {
         CurrentViewModel = _statisticsViewModel;
-        await _statisticsViewModel.LoadAsync();
+        await _statisticsViewModel.LoadAsync(_userId);
     }
     private void NavigateToHome() => CurrentViewModel = _homeViewModel;
 }

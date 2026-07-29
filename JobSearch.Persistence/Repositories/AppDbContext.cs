@@ -17,6 +17,8 @@ public class AppDbContext : DbContext
     public DbSet<JobSite> JobSites => Set<JobSite>();
     public DbSet<Job> Jobs => Set<Job>();
     public DbSet<UserJobMatch> UserJobMatches => Set<UserJobMatch>();
+    // ADR-0009
+    public DbSet<JobRejection> UserJobRejections => Set<JobRejection>();
     public DbSet<SentEmail> SentEmails => Set<SentEmail>();
     public DbSet<EmailSettings> EmailSettings => Set<EmailSettings>();
 
@@ -28,6 +30,7 @@ public class AppDbContext : DbContext
         modelBuilder.ApplyConfiguration(new JobSiteConfiguration());
         modelBuilder.ApplyConfiguration(new JobConfiguration());
         modelBuilder.ApplyConfiguration(new UserJobMatchConfiguration());
+        modelBuilder.ApplyConfiguration(new UserJobRejectionConfiguration()); // ADR-0009
         modelBuilder.ApplyConfiguration(new SentEmailConfiguration());
         modelBuilder.ApplyConfiguration(new EmailSettingsConfiguration());
 

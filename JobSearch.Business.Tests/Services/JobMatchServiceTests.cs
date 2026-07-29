@@ -12,6 +12,7 @@ namespace JobSearch.Business.Tests.Services;
 public class JobMatchServiceTests
 {
     private readonly Mock<IUserJobMatchRepository> _mockMatchRepository;
+    private readonly Mock<IUserJobRejectionRepository> _mockRejectionRepository;
     private readonly Mock<IJobRepository> _mockJobRepository;
     private readonly Mock<IOptions<AnthropicSettings>> _mockAnthropicSettings;
     private readonly JobMatchService _sut;
@@ -19,6 +20,7 @@ public class JobMatchServiceTests
     public JobMatchServiceTests()
     {
         _mockMatchRepository = new Mock<IUserJobMatchRepository>();
+        _mockRejectionRepository = new Mock<IUserJobRejectionRepository>();
         _mockJobRepository = new Mock<IJobRepository>();
         _mockAnthropicSettings = new Mock<IOptions<AnthropicSettings>>();
 
@@ -30,6 +32,7 @@ public class JobMatchServiceTests
 
         _sut = new JobMatchService(
             _mockMatchRepository.Object,
+            _mockRejectionRepository.Object,
             _mockJobRepository.Object,
             _mockAnthropicSettings.Object);
     }
@@ -62,10 +65,19 @@ public class JobMatchServiceTests
         result.RelevanceScore.Should().Be(85);
         result.RelevanceReason.Should().Be(reason);
         result.WasNotified.Should().BeFalse();
+
+        // ADR-0009: no rejection should be written on the match path.
+        _mockRejectionRepository.Verify(
+            r => r.CreateAsync(It.IsAny<UserJobRejectionPersistenceDto>(), It.IsAny<CancellationToken>()),
+            Times.Never);
     }
 
+    // ADR-0009: below-threshold now persists a rejection instead of
+    // silently discarding the score/reason. This replaces the old
+    // "...ReturnsNull" test, which asserted GetByIdAsync/CreateAsync
+    // were *never* called on this path — that's no longer true.
     [Fact]
-    public async Task TryCreateMatchAsync_WithScoreBelowThreshold_ReturnsNull()
+    public async Task TryCreateMatchAsync_WithScoreBelowThreshold_PersistsRejectionAndReturnsNull()
     {
         // Arrange
         var userId = Guid.NewGuid();
@@ -73,14 +85,35 @@ public class JobMatchServiceTests
         var score = 50; // Below threshold of 70
         var reason = "Partial match";
 
+        var job = CreateTestJob(jobId);
+        _mockJobRepository
+            .Setup(r => r.GetByIdAsync(jobId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(job);
+
+        _mockRejectionRepository
+            .Setup(r => r.CreateAsync(It.IsAny<UserJobRejectionPersistenceDto>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((UserJobRejectionPersistenceDto dto, CancellationToken _) => dto);
+
         // Act
         var result = await _sut.TryCreateMatchAsync(userId, jobId, score, reason);
 
         // Assert
         result.Should().BeNull();
+
         _mockJobRepository.Verify(
-            r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()),
-            Times.Never);
+            r => r.GetByIdAsync(jobId, It.IsAny<CancellationToken>()),
+            Times.Once);
+
+        _mockRejectionRepository.Verify(
+            r => r.CreateAsync(
+                It.Is<UserJobRejectionPersistenceDto>(dto =>
+                    dto.UserId == userId &&
+                    dto.JobId == jobId &&
+                    dto.RelevanceScore == 50 &&
+                    dto.RelevanceReason == reason),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+
         _mockMatchRepository.Verify(
             r => r.CreateAsync(It.IsAny<UserJobMatchPersistenceDto>(), It.IsAny<CancellationToken>()),
             Times.Never);
@@ -139,7 +172,7 @@ public class JobMatchServiceTests
     }
 
     [Fact]
-    public async Task TryCreateMatchAsync_WithNegativeScore_ClampsTo0AndReturnsNull()
+    public async Task TryCreateMatchAsync_WithNegativeScore_ClampsTo0AndPersistsRejection()
     {
         // Arrange
         var userId = Guid.NewGuid();
@@ -147,11 +180,26 @@ public class JobMatchServiceTests
         var score = -10;
         var reason = "Negative match somehow";
 
+        var job = CreateTestJob(jobId);
+        _mockJobRepository
+            .Setup(r => r.GetByIdAsync(jobId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(job);
+
+        _mockRejectionRepository
+            .Setup(r => r.CreateAsync(It.IsAny<UserJobRejectionPersistenceDto>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((UserJobRejectionPersistenceDto dto, CancellationToken _) => dto);
+
         // Act
         var result = await _sut.TryCreateMatchAsync(userId, jobId, score, reason);
 
         // Assert
         result.Should().BeNull(); // Clamped to 0, which is below threshold
+
+        _mockRejectionRepository.Verify(
+            r => r.CreateAsync(
+                It.Is<UserJobRejectionPersistenceDto>(dto => dto.RelevanceScore == 0),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 
     [Fact]
@@ -173,6 +221,34 @@ public class JobMatchServiceTests
         // Assert
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("*not found*");
+    }
+
+    // ADR-0009: the existence guard now also applies to the
+    // below-threshold path — a missing job should throw before any
+    // rejection is written.
+    [Fact]
+    public async Task TryCreateMatchAsync_WithScoreBelowThresholdAndNonExistentJob_ThrowsException()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var jobId = Guid.NewGuid();
+        var score = 40;
+        var reason = "Weak match";
+
+        _mockJobRepository
+            .Setup(r => r.GetByIdAsync(jobId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((JobPersistenceDto?)null);
+
+        // Act
+        Func<Task> act = async () => await _sut.TryCreateMatchAsync(userId, jobId, score, reason);
+
+        // Assert
+        await act.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("*not found*");
+
+        _mockRejectionRepository.Verify(
+            r => r.CreateAsync(It.IsAny<UserJobRejectionPersistenceDto>(), It.IsAny<CancellationToken>()),
+            Times.Never);
     }
 
     [Fact]

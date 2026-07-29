@@ -56,6 +56,9 @@
 
     <!-- Statistics -->
     <sys:String x:Key="Statistics_LoadError">Не вдалося завантажити статистику: {0}</sys:String>
+    <!-- ADR-0009 -->
+    <sys:String x:Key="Statistics_RejectedLoadError">Не вдалося завантажити відхилені вакансії: {0}</sys:String>
+    <sys:String x:Key="Statistics_OpenUrlError">Не вдалося відкрити посилання: {0}</sys:String>
 
     <!-- JobSites -->
     <sys:String x:Key="JobSites_Placeholder">Сайти пошуку — в розробці</sys:String>

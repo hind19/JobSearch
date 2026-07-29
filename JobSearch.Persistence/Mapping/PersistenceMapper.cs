@@ -162,6 +162,31 @@ internal static class PersistenceMapper
             AppliedAt = dto.AppliedAt
         };
 
+    // ADR-0009
+    internal static UserJobRejectionPersistenceDto ToDto(
+        JobRejection entity) =>
+        new(
+            id: entity.Id,
+            userId: entity.UserId,
+            jobId: entity.JobId,
+            relevanceScore: entity.RelevanceScore,
+            relevanceReason: entity.RelevanceReason,
+            analyzedAt: entity.AnalyzedAt,
+            job: ToDto(entity.Job)
+        );
+
+    internal static JobRejection ToEntity(
+        UserJobRejectionPersistenceDto dto) =>
+        new()
+        {
+            Id = dto.Id,
+            UserId = dto.UserId,
+            JobId = dto.JobId,
+            RelevanceScore = dto.RelevanceScore,
+            RelevanceReason = dto.RelevanceReason,
+            AnalyzedAt = dto.AnalyzedAt
+        };
+
     internal static SentEmailPersistenceDto ToDto(SentEmail entity) =>
         new(
             id: entity.Id,

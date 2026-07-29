@@ -56,6 +56,9 @@
 
     <!-- Statistics -->
     <sys:String x:Key="Statistics_LoadError">Failed to load statistics: {0}</sys:String>
+    <!-- ADR-0009 -->
+    <sys:String x:Key="Statistics_RejectedLoadError">Failed to load rejected jobs: {0}</sys:String>
+    <sys:String x:Key="Statistics_OpenUrlError">Failed to open link: {0}</sys:String>
 
     <!-- JobSites -->
     <sys:String x:Key="JobSites_Placeholder">Job sites — coming soon</sys:String>

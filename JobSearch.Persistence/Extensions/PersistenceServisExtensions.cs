@@ -42,17 +42,13 @@ public static class PersistenceServiceExtensions
             options.UseSqlite(connectionString),
             ServiceLifetime.Scoped);
 
-
-        services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlite(connectionString),
-            ServiceLifetime.Scoped);
-
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IUserProfileRepository, UserProfileRepository>();
         services.AddScoped<IUserSkillRepository, UserSkillRepository>();
         services.AddScoped<IJobSiteRepository, JobSiteRepository>();
         services.AddScoped<IJobRepository, JobRepository>();
         services.AddScoped<IUserJobMatchRepository, UserJobMatchRepository>();
+        services.AddScoped<IUserJobRejectionRepository, UserJobRejectionRepository>(); // ADR-0009
         services.AddScoped<ISentEmailRepository, SentEmailRepository>();
         services.AddScoped<IEmailSettingsRepository, EmailSettingsRepository>();
         services.AddScoped<IJobStatisticsRepository, JobStatisticsRepository>();

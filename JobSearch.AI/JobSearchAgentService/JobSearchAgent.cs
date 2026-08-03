@@ -1,5 +1,4 @@
 // JobSearch.AI/JobSearchAgentService/JobSearchAgent.cs
-using System.Text.Json;
 using Anthropic.SDK;
 using Anthropic.SDK.Messaging;
 using JobSearch.Application.Abstractions.Configuration;
@@ -7,6 +6,7 @@ using JobSearch.Application.Abstractions.DTOs;
 using JobSearch.Application.Abstractions.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Text.Json;
 
 namespace JobSearch.AI.JobSearchAgentService;
 
@@ -17,10 +17,10 @@ namespace JobSearch.AI.JobSearchAgentService;
 // class/constructor isn't allowed to expose.
 internal sealed class JobSearchAgent : IJobSearchAgent
 {
-    private const string Model = "claude-sonnet-4-6";
     private const int MaxTokens = 4096;
 
     private readonly AnthropicClient _client;
+    private readonly string _model;
     private readonly IReadOnlyList<IAgentTool> _tools;
     private readonly JobSearchAgentRunContext _runContext;
     private readonly IOptions<WorkerSettings> _workerSettings;
@@ -28,12 +28,14 @@ internal sealed class JobSearchAgent : IJobSearchAgent
 
     public JobSearchAgent(
         AnthropicClient client,
+        IOptions<AnthropicSettings> anthropicSettings,
         IEnumerable<IAgentTool> tools,
         JobSearchAgentRunContext runContext,
         IOptions<WorkerSettings> workerSettings,
         ILogger<JobSearchAgent> logger)
     {
         _client = client;
+        _model = anthropicSettings.Value.Models.JobSearchAgent;
         _tools = tools.ToList();
         _runContext = runContext;
         _workerSettings = workerSettings;
@@ -83,7 +85,7 @@ internal sealed class JobSearchAgent : IJobSearchAgent
         {
             var request = new MessageParameters
             {
-                Model = Model,
+                Model = _model,
                 MaxTokens = MaxTokens,
                 System = [new SystemMessage(JobSearchAgentPrompts.System)],
                 Messages = messages,

@@ -1,7 +1,7 @@
 // JobSearch.AI/JobSearchAgentService/Tools/ScrapeJobLinksTool.cs
+using JobSearch.Application.Abstractions.Interfaces;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using JobSearch.Application.Abstractions.Interfaces;
 
 namespace JobSearch.AI.JobSearchAgentService.Tools;
 

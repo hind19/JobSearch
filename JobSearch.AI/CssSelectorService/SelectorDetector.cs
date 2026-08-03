@@ -1,28 +1,31 @@
 ﻿// JobSearch.AI/Services/SelectorDetector.cs
-using System.Text.Json;
 using Anthropic.SDK;
 using Anthropic.SDK.Messaging;
-using JobSearch.Application.Abstractions.DTOs;
 using JobSearch.Application.Abstractions.Interfaces;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
+using JobSearch.Application.Abstractions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace JobSearch.AI.Services;
 
 public sealed class SelectorDetector : ISelectorDetector
 {
-    private const string Model = "claude-sonnet-4-6";
     private const int MaxTokens = 1024;
 
     private readonly AnthropicClient _client;
+    private readonly string _model;
     private readonly IJobLinksScraper _jobLinksScraper;
     private readonly ILogger<SelectorDetector> _logger;
 
     public SelectorDetector(
         AnthropicClient client,
+        IOptions<AnthropicSettings> anthropicSettings,
         IJobLinksScraper jobLinksScraper,
         ILogger<SelectorDetector> logger)
     {
         _client = client;
+        _model = anthropicSettings.Value.Models.SelectorDetector;
         _jobLinksScraper = jobLinksScraper;
         _logger = logger;
     }
@@ -50,7 +53,7 @@ public sealed class SelectorDetector : ISelectorDetector
 
         var request = new MessageParameters
         {
-            Model = Model,
+            Model = _model,
             MaxTokens = MaxTokens,
             Messages =
             [
@@ -112,7 +115,7 @@ public sealed class SelectorDetector : ISelectorDetector
             return new ScrapeConfigDto(
                  searchUrlTemplate: string.Empty,
                  searchQuery: string.Empty,
-                 containerSelector: raw.ContainerSelector,  // null если не найден
+                 containerSelector: raw.ContainerSelector,
                  linkSelector: raw.LinkSelector,
                  companySelector: raw.CompanySelector,
                  snippetSelector: raw.SnippetSelector,
@@ -142,26 +145,25 @@ public sealed class SelectorDetector : ISelectorDetector
         """;
 
         return
-            "IMPORTANT: Return ONLY raw JSON. No markdown, no ```json fences, " +
-            "no backticks, no explanation. The very first character must be '{'." +
-            "\n\n" +
-            "You are an HTML analysis expert. Analyze the provided HTML of a job listings page " +
-            "and identify the CSS selectors for the following elements." +
-            "\n\n" +
-            "Rules:\n" +
-            "- containerSelector: CSS selector for a single job listing container <div>. " +
-            "All other selectors are relative to this container.\n" +
-            "- linkSelector: CSS selector for the <a> tag with the job URL inside the container.\n" +
-            "- companySelector: CSS selector for the company name element inside the container.\n" +
-            "- snippetSelector: CSS selector for the job description snippet inside the container.\n" +
-            "- dateSelector: CSS selector for the publication date element inside the container.\n" +
-            "- Prefer class-based selectors over tag-only selectors for reliability.\n" +
-            "- If an element cannot be reliably identified, return null for that field.\n" +
-            "\n" +
-            "Return ONLY a valid JSON object following this schema:\n" +
-            schema +
-            "\n\n" +
-            "HTML to analyze:\n" +
-            html;
+            $$"""
+        IMPORTANT: Return ONLY raw JSON. No markdown, no ```json fences, no backticks, no explanation. The very first character must be '{'.
+
+        You are an HTML analysis expert. Analyze the provided HTML of a job listings page and identify the CSS selectors for the following elements.
+
+        Rules:
+        - containerSelector: CSS selector for a single job listing container <div>. All other selectors are relative to this container.
+        - linkSelector: CSS selector for the <a> tag with the job URL inside the container.
+        - companySelector: CSS selector for the company name element inside the container.
+        - snippetSelector: CSS selector for the job description snippet inside the container.
+        - dateSelector: CSS selector for the publication date element inside the container.
+        - Prefer class-based selectors over tag-only selectors for reliability.
+        - If an element cannot be reliably identified, return null for that field.
+
+        Return ONLY a valid JSON object following this schema:
+        {{schema}}
+
+        HTML to analyze:
+        {{html}}
+        """;
     }
 }

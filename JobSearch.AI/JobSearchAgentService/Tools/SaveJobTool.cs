@@ -1,8 +1,8 @@
 // JobSearch.AI/JobSearchAgentService/Tools/SaveJobTool.cs
-using System.Text.Json;
-using System.Text.Json.Nodes;
 using JobSearch.Application.Abstractions.DTOs;
 using JobSearch.Application.Abstractions.Interfaces;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace JobSearch.AI.JobSearchAgentService.Tools;
 
@@ -22,9 +22,11 @@ internal sealed class SaveJobTool : IAgentTool
     public string Name => "save_job";
 
     public string Description =>
-        "Persist a job posting you've extracted from a fetched page. " +
-        "Only call this for a URL you actually fetched with " +
-        "fetch_job_page in this conversation.";
+        """
+         Persist a job posting you've extracted from a fetched page.
+         Only call this for a URL you actually fetched with
+         fetch_job_page in this conversation.
+        """;
 
     public JsonObject InputSchema => new()
     {
@@ -90,7 +92,7 @@ internal sealed class SaveJobTool : IAgentTool
             });
 
         DateTime? postedAt = null;
-        if (input["postedAt"] is JsonNode postedAtNode &&
+        if (input?["postedAt"] is JsonNode postedAtNode &&
             DateTime.TryParse(postedAtNode.GetValue<string>(), out var parsed))
             postedAt = parsed;
 
@@ -101,8 +103,8 @@ internal sealed class SaveJobTool : IAgentTool
             url: url,
             title: title,
             company: company,
-            location: input["location"]?.GetValue<string>() ?? string.Empty,
-            salaryRaw: input["salaryRaw"]?.GetValue<string>() ?? string.Empty,
+            location: input?["location"]?.GetValue<string>() ?? string.Empty,
+            salaryRaw: input?["salaryRaw"]?.GetValue<string>() ?? string.Empty,
             descriptionRaw: descriptionRaw,
             postedAt: postedAt,
             foundAt: DateTime.UtcNow,

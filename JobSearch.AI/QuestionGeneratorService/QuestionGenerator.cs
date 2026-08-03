@@ -1,28 +1,30 @@
 ﻿using Anthropic.SDK;
 using Anthropic.SDK.Messaging;
+using JobSearch.Application.Abstractions.Configuration;
 using JobSearch.Application.Abstractions.DTOs;
 using JobSearch.Application.Abstractions.Enums;
 using JobSearch.Application.Abstractions.Interfaces;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
+using Microsoft.Extensions.Options;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace JobSearch.AI.QuestionGeneratorService
 {
     public class QuestionGenerator : IQuestionGenerator
     {
-        private const string Model = "claude-sonnet-4-6";
         private const int MaxTokens = 1000;
 
         private readonly AnthropicClient _client;
+        private readonly string _model;
         private readonly ILogger<QuestionGenerator> _logger;
 
         public QuestionGenerator(
             AnthropicClient client,
+            IOptions<AnthropicSettings> anthropicSettings,
             ILogger<QuestionGenerator> logger)
         {
             _client = client;
+            _model = anthropicSettings.Value.Models.QuestionGenerator;
             _logger = logger;
         }
 
@@ -36,7 +38,7 @@ namespace JobSearch.AI.QuestionGeneratorService
 
                 var request = new MessageParameters
                 {
-                    Model = Model,
+                    Model = _model,
                     MaxTokens = MaxTokens,
                     System = [new SystemMessage(QuestionGeneratorPrompts.System)],
                     Messages =

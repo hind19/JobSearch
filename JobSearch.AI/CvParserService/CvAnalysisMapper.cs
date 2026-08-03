@@ -6,6 +6,10 @@ namespace JobSearch.AI.Mapping;
 
 internal static class CvAnalysisMapper
 {
+    private const string DateFormat = "yyyy-MM";
+    private const string NotSpecified = "not specified";
+    private const string Unknown = "Unknown";
+
     internal static CvAnalysisResult ToResult(CvAnalysisRaw raw) =>
         new(
             isSuccess: true,
@@ -73,10 +77,7 @@ internal static class CvAnalysisMapper
         if (string.IsNullOrWhiteSpace(value))
             return null;
 
-        return DateOnly.TryParseExact(
-            value,
-            "yyyy-MM",
-            out var date)
+        return DateOnly.TryParseExact(value, DateFormat, out var date)
                 ? date
                 : null;
     }
@@ -92,17 +93,16 @@ internal static class CvAnalysisMapper
                 ")")
             .ToList();
 
-        var roles = raw.DesiredRoles.Count != 0
+        var roles = raw.DesiredRoles.Any()
             ? string.Join(", ", raw.DesiredRoles)
-            : "not specified";
+            : NotSpecified;
 
-        var languages = raw.DetectedLanguages.Count != 0
+        var languages = raw.DetectedLanguages.Any()
             ? string.Join(", ", raw.DetectedLanguages)
-            : "not specified";
-
+            : NotSpecified;
+        // No Personal data is included in the profile, except location, only the relevant information for job search is included.
         return $"""
-            Candidate: {raw.FullName ?? "Unknown"}
-            Location: {raw.Location ?? "not specified"}
+            Location: {raw.Location ?? NotSpecified}
             Desired roles: {roles}
             Languages: {languages}
             Skills: {string.Join(", ", skills)}

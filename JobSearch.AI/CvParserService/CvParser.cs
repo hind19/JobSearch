@@ -1,25 +1,29 @@
-﻿using System.Text.Json;
-using Anthropic.SDK;
+﻿using Anthropic.SDK;
 using Anthropic.SDK.Messaging;
-using Microsoft.Extensions.Logging;
-using JobSearch.Application.Abstractions.Interfaces;
 using JobSearch.AI.Mapping;
+using JobSearch.Application.Abstractions.Configuration;
+using JobSearch.Application.Abstractions.Interfaces;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System.Text.Json;
 
 namespace JobSearch.AI.CvParserService;
 
 public class CvParser : ICvParser
 {
-    private const string Model = "claude-sonnet-4-6";
     private const int MaxTokens = 8192;
 
     private readonly AnthropicClient _client;
+    private readonly string _model;
     private readonly ILogger<CvParser> _logger;
 
     public CvParser(
         AnthropicClient client,
+        IOptions<AnthropicSettings> anthropicSettings,
         ILogger<CvParser> logger)
     {
         _client = client;
+        _model = anthropicSettings.Value.Models.CvParser;
         _logger = logger;
     }
 
@@ -33,7 +37,7 @@ public class CvParser : ICvParser
 
             var request = new MessageParameters
             {
-                Model = Model,
+                Model = _model,
                 MaxTokens = MaxTokens,
                 System = [new SystemMessage(CvParserPrompts.System)],
                 Messages =
@@ -75,7 +79,7 @@ public class CvParser : ICvParser
                 return Fail("Claude returned empty response.");
             }
 
-            // Убираем markdown-обёртку если Claude всё равно её добавил
+            // Remove markdown wrapper if Claude added it anyway
             json = json.Trim();
             if (json.StartsWith("```"))
             {

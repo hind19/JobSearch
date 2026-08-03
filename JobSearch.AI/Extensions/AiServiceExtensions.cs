@@ -23,7 +23,7 @@ public static class AiServiceExtensions
                  "Configure via user-secrets or environment variable " +
                  "'AnthropicSettings__ApiKey'.");
 
-        services.AddSingleton<AnthropicClient>(_ =>
+        services.AddSingleton(_ =>
             new AnthropicClient(new APIAuthentication(apiKey)));
 
         // Bound here (not in BusinessServiceExtensions) so JobMatchService

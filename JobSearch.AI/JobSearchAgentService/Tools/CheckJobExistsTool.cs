@@ -1,7 +1,7 @@
 // JobSearch.AI/JobSearchAgentService/Tools/CheckJobExistsTool.cs
+using JobSearch.Application.Abstractions.Interfaces;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using JobSearch.Application.Abstractions.Interfaces;
 
 namespace JobSearch.AI.JobSearchAgentService.Tools;
 
@@ -15,8 +15,10 @@ internal sealed class CheckJobExistsTool : IAgentTool
     public string Name => "check_job_exists";
 
     public string Description =>
-        "Check whether a job posting URL has already been saved from a " +
-        "previous run, before spending effort fetching and parsing it.";
+        """
+         Check whether a job posting URL has already been saved from a previous run,
+         before spending effort fetching and parsing it.
+        """;
 
     public JsonObject InputSchema => new()
     {

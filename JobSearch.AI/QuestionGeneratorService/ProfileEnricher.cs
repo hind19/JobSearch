@@ -1,9 +1,10 @@
 ﻿// JobSearch.AI/Services/ProfileEnricher.cs
 using Anthropic.SDK;
-using Anthropic.SDK.Constants;
 using Anthropic.SDK.Messaging;
+using JobSearch.Application.Abstractions.Configuration;
 using JobSearch.Application.Abstractions.DTOs;
 using JobSearch.Application.Abstractions.Interfaces;
+using Microsoft.Extensions.Options;
 using System.Text;
 
 namespace JobSearch.AI.Services;
@@ -11,11 +12,12 @@ namespace JobSearch.AI.Services;
 internal sealed class ProfileEnricher : IProfileEnricher
 {
     private readonly AnthropicClient _client;
-    private const string Model = "claude-sonnet-4-6";
+    private readonly string _model;
 
-    public ProfileEnricher(AnthropicClient client)
+    public ProfileEnricher(AnthropicClient client, IOptions<AnthropicSettings> anthropicSettings)
     {
         _client = client;
+        _model = anthropicSettings.Value.Models.ProfileEnricher;
     }
 
     public async Task<string> EnrichAsync(
@@ -42,7 +44,7 @@ internal sealed class ProfileEnricher : IProfileEnricher
 
         var request = new MessageParameters
         {
-            Model = Model,
+            Model = _model,
             MaxTokens = 1024,
             Messages =
             [

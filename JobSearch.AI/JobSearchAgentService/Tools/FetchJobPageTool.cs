@@ -1,7 +1,7 @@
 // JobSearch.AI/JobSearchAgentService/Tools/FetchJobPageTool.cs
+using JobSearch.Application.Abstractions.Interfaces;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using JobSearch.Application.Abstractions.Interfaces;
 
 namespace JobSearch.AI.JobSearchAgentService.Tools;
 
@@ -24,8 +24,10 @@ internal sealed class FetchJobPageTool : IAgentTool
     public string Name => "fetch_job_page";
 
     public string Description =>
-        "Fetch the raw page content for a single job posting URL, so " +
-        "you can read and extract its details yourself.";
+        """
+         Fetch the raw page content for a single job posting URL, so
+         you can read and extract its details yourself.
+        """;
 
     public JsonObject InputSchema => new()
     {

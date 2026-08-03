@@ -1,6 +1,6 @@
 // JobSearch.AI/JobSearchAgentService/HtmlCleaner.cs
-using System.Net;
 using HtmlAgilityPack;
+using System.Net;
 
 namespace JobSearch.AI.JobSearchAgentService;
 

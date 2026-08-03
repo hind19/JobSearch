@@ -1,9 +1,9 @@
 // JobSearch.AI/JobSearchAgentService/Tools/ScoreRelevanceTool.cs
-using System.Text.Json;
-using System.Text.Json.Nodes;
 using JobSearch.Application.Abstractions.Configuration;
 using JobSearch.Application.Abstractions.Interfaces;
 using Microsoft.Extensions.Options;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace JobSearch.AI.JobSearchAgentService.Tools;
 
@@ -26,9 +26,11 @@ internal sealed class ScoreRelevanceTool : IAgentTool
     public string Name => "score_relevance";
 
     public string Description =>
-        "Submit your relevance assessment of a saved job against the " +
-        "candidate's profile. You compute the score and reasoning " +
-        "yourself; this tool just records it.";
+        """
+         Submit your relevance assessment of a saved job against the
+         candidate's profile. You compute the score and reasoning
+         yourself; this tool just records it.
+        """;
 
     public JsonObject InputSchema => new()
     {

@@ -119,6 +119,7 @@ Two AI services, both fully implemented:
 2. System/user prompts in `CvParserService/CvParserPrompts.cs` as `internal const string` constants. System prompt instructs Claude to return **only** a raw JSON object — no markdown or backticks.
 3. Response JSON deserialized into internal models in `CvParserService/` (`CvAnalysisRaw`, `SkillRaw`, `WorkExperienceRaw`).
 4. `CvParserService/CvAnalysisMapper.cs` maps raw models to Application DTOs, and builds `CvAnalysisResult.ClaudeReadyProfile` — a compact plaintext summary for feeding back into Claude for job-matching.
+**PII rule (ADR-0010):** `ClaudeReadyProfile` must never contain full name, email, or phone number — it's sent to Claude in every downstream call (`QuestionGenerator`, `ProfileEnricher`, and the Worker agent loop's initial context per ADR-0004). Personal data may only flow into `CandidateInfo`/the `Users` table via the explicit, human-triggered save in `UserProfileService.SaveProfileAsync` — never into any field that gets sent back to Claude, unless the user explicitly instructs otherwise for that specific case. Check this rule before touching `BuildClaudeReadyProfile` or any future prompt-context assembly.
 5. On parse failure, returns `CvAnalysisResult` with `IsSuccess = false` and `ErrorMessage` rather than throwing (except `OperationCanceledException`).
 
 **`QuestionGenerator`** (implements `IQuestionGenerator`):
@@ -158,5 +159,6 @@ DI is fully wired in `App.xaml.cs` via `Host.CreateDefaultBuilder()`. `App.OnSta
 ### Configuration
 
 - `appsettings.json` in each entry-point project holds stubs for: `ConnectionStrings`, `AnthropicSettings`, `WorkerSettings`, `EmailSettings`.
-- Both WPF and Worker support `.AddUserSecrets<T>()` for local development secrets. Use user-secrets for the Anthropic API key and SMTP credentials.
+- Both WPF and Worker support `.AddUserSecrets<T>()` for local development secrets. Use user-secrets for the Anthropic API key (both hosts) and the SMTP password (`EmailSettings:SmtpPassword` — **Worker only**: `EmailSender.SendSmtpAsync` is the sole reader, and only `WorkerRun` calls `IEmailSender`; WPF's `EmailSettingsViewModel` only edits the DB-stored non-secret fields, never sends).
+- `AnthropicSettings:Models` differs by host — see per-project `appsettings.json`; each host's config carries only the model keys its own AI services actually read (ADR pending for this split, or fold into ADR-0008 notes if you want it documented there too).
 - `WorkerSettings` is intended for the scrape→match→email pipeline scheduling interval.

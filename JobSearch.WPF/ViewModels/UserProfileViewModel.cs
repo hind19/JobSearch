@@ -276,7 +276,7 @@ public partial class UserProfileViewModel : ObservableObject
 
         await Task.WhenAll(skillsTask, profileTask, userTask);
 
-        var skills = skillsTask.Result;
+        var skills = await skillsTask;
         Skills = new ObservableCollection<SkillItem>(skills.Select(s => new SkillItem
         {
             IsFromCv = s.ExtractedByClaude,
@@ -285,10 +285,10 @@ public partial class UserProfileViewModel : ObservableObject
             YearsOfExperience = (int)Math.Round(s.YearsOfExperience.GetValueOrDefault())
         }));
 
-        var user = userTask.Result;
+        var user = await userTask;
         SavedCandidateName = user?.Name;
 
-        var profile = profileTask.Result;
+        var profile = await profileTask;
         if (profile is null)
             return;
 

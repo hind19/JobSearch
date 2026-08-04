@@ -62,8 +62,8 @@ public class WorkerRun
 
         await Task.WhenAll(profileTask, jobSitesTask);
 
-        var profile = profileTask.Result;
-        var jobSites = jobSitesTask.Result;
+        var profile = await profileTask;
+        var jobSites = await jobSitesTask;
 
         if (profile is null)
         {
